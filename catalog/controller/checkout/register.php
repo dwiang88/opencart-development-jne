@@ -109,6 +109,9 @@ class ControllerCheckoutRegister extends Controller {
 		
 		$json = array();
 		
+		// $this->response->setOutput(json_encode($this->request->post));	
+		// return;
+
 		// Validate if customer is already logged out.
 		if ($this->customer->isLogged()) {
 			$json['redirect'] = $this->url->link('checkout/checkout', '', 'SSL');			
@@ -214,6 +217,10 @@ class ControllerCheckoutRegister extends Controller {
 			if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {
 				$json['error']['zone'] = $this->language->get('error_zone');
 			}
+			
+			if ( $this->request->post['country_id'] == 100 && isset($this->request->post['city_id']) && $this->request->post['city_id'] == '') {
+				$json['error']['city_id'] = $this->language->get('error_city_id');
+			}
 	
 			if ((utf8_strlen($this->request->post['password']) < 4) || (utf8_strlen($this->request->post['password']) > 20)) {
 				$json['error']['password'] = $this->language->get('error_password');
@@ -250,6 +257,7 @@ class ControllerCheckoutRegister extends Controller {
 					$this->session->data['shipping_address_id'] = $this->customer->getAddressId();
 					$this->session->data['shipping_country_id'] = $this->request->post['country_id'];
 					$this->session->data['shipping_zone_id'] = $this->request->post['zone_id'];
+					$this->session->data['shipping_city_id'] = $this->request->post['city_id'];
 					$this->session->data['shipping_postcode'] = $this->request->post['postcode'];					
 				}
 			} else {

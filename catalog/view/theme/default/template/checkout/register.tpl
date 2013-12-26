@@ -102,7 +102,7 @@
   <br />
   <span class="required">*</span> <?php echo $entry_city; ?><br />
   <select name="city_id" class="large-field">
-    <option><?php echo $text_select; ?></option>
+    <option value=""><?php echo $text_select; ?></option>
   </select>
   </div>
   <!-- /JNE -->

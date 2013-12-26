@@ -89,6 +89,7 @@ $_['error_city']                     = 'City must be between 2 and 128 character
 $_['error_postcode']                 = 'Postcode must be between 2 and 10 characters!';
 $_['error_country']                  = 'Please select a country!';
 $_['error_zone']                     = 'Please select a region / state!';
+$_['error_city_id']                  = 'Please select a city!';
 $_['error_agree']                    = 'Warning: You must agree to the %s!';
 $_['error_address']                  = 'Warning: You must select address!';
 $_['error_shipping']                 = 'Warning: Shipping method required!';
