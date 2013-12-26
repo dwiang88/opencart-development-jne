@@ -3,6 +3,11 @@ class ControllerCheckoutCart extends Controller {
 	private $error = array();
 	
 	public function index() {
+		/*
+		echo '<pre>';
+        echo print_r($_SESSION, 1);
+        echo '</pre>';
+		*/
 		
 		$this->language->load('checkout/cart');
         
@@ -199,6 +204,8 @@ class ControllerCheckoutCart extends Controller {
 
             $products = $this->cart->getProducts();
 
+            $this->load->model('shipping/jne');
+
             foreach ($products as $product) {
                 $product_total = 0;
 
@@ -275,40 +282,9 @@ class ControllerCheckoutCart extends Controller {
                 }
 
 /* ------------------------------------------------------------------------------------------------------------ */                
-
+	
                 $tax = 7000;
-                $weight = $this->_jneConvertion( 'weight', 'convert', $product );
-                $weight_jne = $this->_jneConvertion( 'tolerance', null, $product );
-     //            if( $weight > 1 ){
-     //            	$tolerance  = $this->config->get('jne_tolerance');
-					// $_weights   = $this->_floor_dec($weight, 2);
-					// $intval     = intval($weight);
-					// $diff       = $_weights - $intval;
-					// $weight_jne = $diff > $tolerance ? ceil($weight) : $intval;
-     //            } else {
-     //            	$weight_jne = 1;
-     //            }
-
-                $dimension  = $this->_jneConvertion( 'dimension', 'convert', $product );
-                $this->data['specific'][] = array(
-                	'key'                 	=> $product['key'],
-                    'name'                	=> $product['name'],
-                    'weight format'		  	=> $this->_jneConvertion(
-                    							'weight',
-                    							'format',
-                    							$product
-                    						),
-                    'weight convert'		=> $weight,
-                    'dimension format'		=> $this->_jneConvertion(
-                    							'dimension',
-                    							'format',
-                    							$product
-                    						),
-                    'dimension convert'		 	=> $dimension,
-                    'weight_jne'		 		=> $weight_jne,
-                    'jne_calculation_weight'	=> $weight_jne * $tax,
-                    'jne_calculation_dimension'	=> $dimension ? ((($dimension['length'] * $dimension['width'] * $dimension['height']) / 6000) * $tax ): 0
-            	);
+                $this->data['jne_convertion'][] = $this->model_shipping_jne->getAttributes( $product, $tax );
 
 /* ------------------------------------------------------------------------------------------------------------ */
                 
@@ -333,7 +309,8 @@ class ControllerCheckoutCart extends Controller {
 
 /* ------------------------------------------------------------------------------------------------------------ */
             echo '<pre>';
-            var_dump($this->data['specific']);
+            echo print_r($this->data['jne_convertion'], 1);
+            // var_dump($this->data['specific']);
             echo '</pre>';
 /* ------------------------------------------------------------------------------------------------------------ */
 
@@ -882,6 +859,7 @@ class ControllerCheckoutCart extends Controller {
 	}
 
 	/* JNE */
+
 	public function jneTax(){
 
 		$data = array();
@@ -923,7 +901,6 @@ class ControllerCheckoutCart extends Controller {
 		
 		$this->response->setOutput(json_encode($json));
 	}
-	/* /JNE */
 
 	public function jne() {
 		// $default_currency = $this->config->get("config_currency");
@@ -951,124 +928,6 @@ class ControllerCheckoutCart extends Controller {
 
 		// $c = array_pop($c);
 		// $provinsi = $c['name'];
-
- 	// 	$JNE = $this->model_shipping_jne->populateJNE();
-
- 	// 	$zone_sort  = $JNE::OrderProvinsi( $zone );
- 	// 	$cities 	= $JNE->getCitiesByProvinceOnGroup( $provinsi );
-
- 		/*
-		$data = $JNE->getData( true );
-		// $data = array_splice($data, 0, 10);
-
-		$rows = array_filter($data, function($_d) use($provinsi){
-			return preg_match('/'. $provinsi .'/', $_d['provinsi']);
-		});
-
-		$cities = array();
-		foreach( $rows as $index => $row ){
-			$cities[$row['kota']][$index] = $row['kecamatan'];
-		}	
-		*/
-  //   	$this->response->setOutput(json_encode(array(
-  //   		'zone' => $zone,
-  //   		'zone_sort' => $zone_sort,
-  //   		'cities' => $cities,
-		// )));
-	}
-
-	private function _jneConvertion( $type, $output, $product ){
-		$_default_class_id = array(
-			'weight' 	=> '1', 	// kg
-			'length' 	=> '1', 	// cm
-			'currency' 	=> 'IDR' 	// rp
-		);
-
-		if( $type == 'weight' ){
-
-			if( $product['weight'] == 0 ) return 1.00;
-
-			$class_id   = $_default_class_id['weight'];
-			$p_class_id = $product['weight_class_id'];
-
-			if( $output == 'convert' ){
-				return $p_class_id != $class_id ? 
-						$this->weight->convert($product['weight'], $p_class_id, $class_id) :
-						$product['weight'] ;
-			}
-			else if( $output == 'format' ){
-				return $p_class_id != $class_id ? 
-						$this->weight->format($product['weight'], $p_class_id, $class_id) :
-						$this->weight->format($product['weight'], $class_id) ;
-			}
-
-		} elseif( $type == 'dimension' ) {
-
-			if($product['length'] == 0 || $product['width'] == 0 || $product['height'] == 0) return array();
-
-			$class_id   = $_default_class_id['length'];
-			$p_class_id = $product['length_class_id'];
-
-			if( $output == 'convert' ){
-				return array(
-					'length' => $p_class_id != $class_id ? 
-									$this->length->convert($product['length'], $p_class_id, $class_id) :
-									$product['length'], 
-					'width' => $p_class_id != $class_id ? 
-									$this->length->convert($product['width'], $p_class_id, $class_id) :
-									$product['width'],
-					'height' => $p_class_id != $class_id ? 
-									$this->length->convert($product['height'], $p_class_id, $class_id) :
-									$product['height'] 
-
-				);
-			}
-			else if( $output == 'format' ){
-				return array(
-					'length' => $p_class_id != $class_id ? 
-									$this->length->format($product['length'], $p_class_id, $class_id) :
-									$this->length->format($product['length'], $class_id), 
-					'width' => $p_class_id != $class_id ? 
-									$this->length->format($product['width'], $p_class_id, $class_id) :
-									$this->length->format($product['width'], $class_id), 
-					'height' => $p_class_id != $class_id ? 
-									$this->length->format($product['height'], $p_class_id, $class_id) :
-									$this->length->format($product['height'], $class_id), 
-
-				);
-			}
-
-		} elseif( $type == 'tolerance' ) {
-
-        	$tolerance  = $this->config->get('jne_tolerance');
-
-			$weight = $this->_jneConvertion( 'weight', 'convert', $product );
-			if( $weight > 1 ){
-				$_weights   = $this->_floor_dec($weight, 2);
-				$intval     = intval($weight);
-				$diff       = $_weights - $intval;
-				$weight_jne = $diff > $tolerance ? ceil($weight) : $intval;
-            } else {
-            	$weight_jne = 1;
-            }
-
-            return $weight_jne;
-		}
-
-		return null;
-	}
-
-	private function _floor_dec($number, $precision = 1, $separator = '.')
-	{
-	    $numberpart=explode($separator,$number);
-	    $numberpart[1]=substr_replace($numberpart[1],$separator,$precision,0);
-	    if($numberpart[0]>=0)
-	    {$numberpart[1]=floor($numberpart[1]);}
-	    else
-	    {$numberpart[1]=ceil($numberpart[1]);}
-
-	    $ceil_number= array($numberpart[0],$numberpart[1]);
-	    return implode($separator,$ceil_number);
 	}
 }
 ?>

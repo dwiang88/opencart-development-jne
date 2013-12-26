@@ -23,7 +23,7 @@ class ModelShippingJne extends Model {
 		// $default_currency = $this->config->get("config_currency");
 		$default_currency = $this->session->data['currency'];
 
-		$JNE  = $this->model_shipping_jne->populateJNE();
+		$JNE  = $this->populateJNE();
 	
 		if ($status) {
 			$quote_data = array();
@@ -33,13 +33,17 @@ class ModelShippingJne extends Model {
 				foreach( $taxes as $layanan => $tarif )
 				{				
 					$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
-
+					$text = $this->currency->format($cost, 'IDR');
+					if( $default_currency != 'IDR' ){
+						$text .= '( ' .  $this->currency->format($cost, $default_currency) . ')';
+					}
+					
 					$quote_data[$layanan] = array(
 		        		'code'         => 'jne.' . $layanan,
 		        		'title'        => $this->language->get('text_description') . ' ' . strtoupper($layanan),
 		        		'cost'         => $cost,
 		        		'tax_class_id' => null,
-						'text'         => $this->currency->format($cost, 'IDR')
+						'text'         => $text
 		      		);
 				}
 			}
@@ -62,6 +66,129 @@ class ModelShippingJne extends Model {
 		$this->jne->start = 5;
 		$this->jne->populate();
 		return $this->jne;
+	}
+
+	function getAttributes( $product, $tax ){
+
+		$weight 	= $this->_jneConvertion( 'weight', 'convert', $product );
+        $dimension  = $this->_jneConvertion( 'dimension', 'convert', $product );
+
+        $weight_jne_original   = $this->_jneConvertion( 'tolerance', null, $product );
+        $weight_jne_volumetrik = $dimension ? ((($dimension['length'] * $dimension['width'] * $dimension['height']) / 6000) * $product['weight'] ): 0;
+
+        $attributes = array(
+        	'key'           => $product['key'],
+            'name'          => $product['name'],
+            'weight' 		=> array(
+            	'original'   => $this->_jneConvertion( 'weight', 'format', $product ),
+            	'convertion' => $weight . 'kg',
+            	'floor'  	 => $this->_floorDec($weight) . 'kg',
+            	'tolerance'  => $weight_jne_original
+            ),
+            'dimension' 	=> array(
+            	'format'  => $this->_jneConvertion( 'dimension', 'format', $product ),
+            	'convert' => $dimension
+            ),
+            'jne'			=> array(
+	            'weight'	=> array(
+	            	'original'   => $weight_jne_original,
+	            	'volumetrik' => $weight_jne_volumetrik
+	            ),
+	            'calculation' => array(
+	            	'original'	 => $weight_jne_original * $tax,
+	            	'volumetrik' => $weight_jne_volumetrik * $tax
+	            )
+            )
+    	);
+
+    	return $attributes;
+	}
+
+	private function _jneConvertion( $type, $output, $product ){
+		$_default_class_id = array(
+			'weight' 	=> '1', 	// kg
+			'length' 	=> '1', 	// cm
+			'currency' 	=> 'IDR' 	// rp
+		);
+
+		if( $type == 'weight' ){
+
+			if( $product['weight'] == 0 ) return 1.00;
+
+			$class_id   = $_default_class_id['weight'];
+			$p_class_id = $product['weight_class_id'];
+
+			if( $output == 'convert' ){
+				return $p_class_id != $class_id ? 
+						$this->weight->convert($product['weight'], $p_class_id, $class_id) :
+						$product['weight'] ;
+			}
+			else if( $output == 'format' ){
+				return $p_class_id != $class_id ? 
+						$this->weight->format($product['weight'], $p_class_id, $class_id) :
+						$this->weight->format($product['weight'], $class_id) ;
+			}
+
+		} elseif( $type == 'dimension' ) {
+
+			if($product['length'] == 0 || $product['width'] == 0 || $product['height'] == 0) return array();
+
+			$class_id   = $_default_class_id['length'];
+			$p_class_id = $product['length_class_id'];
+
+			if( $output == 'convert' ){
+				return array(
+					'length' => $p_class_id != $class_id ? 
+									$this->length->convert($product['length'], $p_class_id, $class_id) :
+									$product['length'], 
+					'width' => $p_class_id != $class_id ? 
+									$this->length->convert($product['width'], $p_class_id, $class_id) :
+									$product['width'],
+					'height' => $p_class_id != $class_id ? 
+									$this->length->convert($product['height'], $p_class_id, $class_id) :
+									$product['height'] 
+
+				);
+			}
+			else if( $output == 'format' ){
+				return array(
+					'length' => $p_class_id != $class_id ? 
+									$this->length->format($product['length'], $p_class_id, $class_id) :
+									$this->length->format($product['length'], $class_id), 
+					'width' => $p_class_id != $class_id ? 
+									$this->length->format($product['width'], $p_class_id, $class_id) :
+									$this->length->format($product['width'], $class_id), 
+					'height' => $p_class_id != $class_id ? 
+									$this->length->format($product['height'], $p_class_id, $class_id) :
+									$this->length->format($product['height'], $class_id), 
+
+				);
+			}
+
+		} elseif( $type == 'tolerance' ) {
+
+        	$tolerance  = $this->config->get('jne_tolerance');
+        	// $tolerance  = 0.3;
+
+			$weight = $this->_jneConvertion( 'weight', 'convert', $product );
+			if( $weight > 1 ){
+				$_weights   = $this->_floorDec($weight);
+				$intval     = intval($weight);
+				$diff       = $weight - $intval;
+				$weight_jne = $diff > $tolerance ? ceil($weight) : $intval;
+            } else {
+            	$weight_jne = 1;
+            }
+
+            return $weight_jne;
+		}
+
+		return null;
+	}
+
+	// http://php.net/round
+	private function _floorDec($number, $precision = 2) {
+	    return round($number, $precision, PHP_ROUND_HALF_DOWN);
 	}
 }
 ?>
