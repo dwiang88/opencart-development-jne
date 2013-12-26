@@ -3,6 +3,7 @@ class ControllerCheckoutCart extends Controller {
 	private $error = array();
 	
 	public function index() {
+		
 		$this->language->load('checkout/cart');
         
 		if (!isset($this->session->data['vouchers'])) {
@@ -139,6 +140,11 @@ class ControllerCheckoutCart extends Controller {
 			$this->data['entry_reward'] = sprintf($this->language->get('entry_reward'), $points_total);
 			$this->data['entry_country'] = $this->language->get('entry_country');
 			$this->data['entry_zone'] = $this->language->get('entry_zone');
+
+			/* JNE city, indonesia only */
+			$this->data['entry_city'] = $this->language->get('entry_city');
+			/* /JNE city, indonesia only */
+
 			$this->data['entry_postcode'] = $this->language->get('entry_postcode');
 						
 			$this->data['button_update'] = $this->language->get('button_update');
@@ -268,6 +274,44 @@ class ControllerCheckoutCart extends Controller {
                     }
                 }
 
+/* ------------------------------------------------------------------------------------------------------------ */                
+
+                $tax = 7000;
+                $weight = $this->_jneConvertion( 'weight', 'convert', $product );
+                $weight_jne = $this->_jneConvertion( 'tolerance', null, $product );
+     //            if( $weight > 1 ){
+     //            	$tolerance  = $this->config->get('jne_tolerance');
+					// $_weights   = $this->_floor_dec($weight, 2);
+					// $intval     = intval($weight);
+					// $diff       = $_weights - $intval;
+					// $weight_jne = $diff > $tolerance ? ceil($weight) : $intval;
+     //            } else {
+     //            	$weight_jne = 1;
+     //            }
+
+                $dimension  = $this->_jneConvertion( 'dimension', 'convert', $product );
+                $this->data['specific'][] = array(
+                	'key'                 	=> $product['key'],
+                    'name'                	=> $product['name'],
+                    'weight format'		  	=> $this->_jneConvertion(
+                    							'weight',
+                    							'format',
+                    							$product
+                    						),
+                    'weight convert'		=> $weight,
+                    'dimension format'		=> $this->_jneConvertion(
+                    							'dimension',
+                    							'format',
+                    							$product
+                    						),
+                    'dimension convert'		 	=> $dimension,
+                    'weight_jne'		 		=> $weight_jne,
+                    'jne_calculation_weight'	=> $weight_jne * $tax,
+                    'jne_calculation_dimension'	=> $dimension ? ((($dimension['length'] * $dimension['width'] * $dimension['height']) / 6000) * $tax ): 0
+            	);
+
+/* ------------------------------------------------------------------------------------------------------------ */
+                
                 $this->data['products'][] = array(
                     'key'                 => $product['key'],
                     'thumb'               => $image,
@@ -287,6 +331,11 @@ class ControllerCheckoutCart extends Controller {
                 );
             }
 
+/* ------------------------------------------------------------------------------------------------------------ */
+            echo '<pre>';
+            var_dump($this->data['specific']);
+            echo '</pre>';
+/* ------------------------------------------------------------------------------------------------------------ */
 
             $this->data['products_recurring'] = array();
             
@@ -361,6 +410,16 @@ class ControllerCheckoutCart extends Controller {
 			} else {
 				$this->data['zone_id'] = '';
 			}
+
+			/* JNE city, indonesia only */
+			if (isset($this->request->post['city_id'])) {
+				$this->data['city_id'] = $this->request->post['city_id'];				
+			} elseif (isset($this->session->data['shipping_city_id'])) {
+				$this->data['city_id'] = $this->session->data['shipping_city_id'];			
+			} else {
+				$this->data['city_id'] = '';
+			}
+			/* JNE city, indonesia only */
 			
 			if (isset($this->request->post['postcode'])) {
 				$this->data['postcode'] = $this->request->post['postcode'];				
@@ -681,6 +740,14 @@ class ControllerCheckoutCart extends Controller {
 		if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {
 			$json['error']['zone'] = $this->language->get('error_zone');
 		}
+
+		/* JNE city error, indonesia only (country_id == 100) */
+		if( isset($this->request->post['city_id']) ){
+			if ($this->request->post['country_id'] == 100 && $this->request->post['city_id'] == '') {
+				$json['error']['city'] = $this->language->get('error_city');
+			}
+		}
+		/* /JNE city error */
 			
 		$this->load->model('localisation/country');
 		
@@ -696,6 +763,7 @@ class ControllerCheckoutCart extends Controller {
 			// Default Shipping Address
 			$this->session->data['shipping_country_id'] = $this->request->post['country_id'];
 			$this->session->data['shipping_zone_id'] = $this->request->post['zone_id'];
+			$this->session->data['shipping_city_id'] = $this->request->post['city_id'];
 			$this->session->data['shipping_postcode'] = $this->request->post['postcode'];
 		
 			if ($country_info) {
@@ -784,6 +852,11 @@ class ControllerCheckoutCart extends Controller {
 	}
 	
 	public function country() {
+
+		if( $this->request->get['country_id'] == 100 ) {
+			return $this->forward('checkout/cart/jneTax');
+		}
+
 		$json = array();
 		
 		$this->load->model('localisation/country');
@@ -806,6 +879,196 @@ class ControllerCheckoutCart extends Controller {
 		}
 		
 		$this->response->setOutput(json_encode($json));
+	}
+
+	/* JNE */
+	public function jneTax(){
+
+		$data = array();
+		
+		$this->load->model('localisation/zone');
+		$this->load->model('shipping/jne');
+
+		$zone = $this->model_localisation_zone->getZonesByCountryId(100);
+		$JNE  = $this->model_shipping_jne->populateJNE();
+		
+		$act = isset($this->request->get['act']) ? $this->request->get['act'] : null ;
+		switch ($act) {
+			case 'city':
+				$provinsi = $this->request->get['province'];
+
+				$data = $JNE->getCitiesByProvinceOnGroup( $provinsi );
+				$json = array(
+					'postcode_required' => '0',
+					'data' => $data
+				);
+				break;
+			
+			default:
+				$zone = $JNE::OrderProvinsi( $zone );
+
+				if( $jne_zone_allowed = $this->config->get('jne_zone_allowed') ){
+					$jne_zone_allowed = unserialize($this->config->get('jne_zone_allowed'));
+					$zone = array_intersect_key($zone, array_flip($jne_zone_allowed));
+				}
+
+				sort($zone);
+
+				$json = array(
+					'postcode_required' => '0',
+					'zone' => $zone
+				);
+				break;
+		}
+		
+		$this->response->setOutput(json_encode($json));
+	}
+	/* /JNE */
+
+	public function jne() {
+		// $default_currency = $this->config->get("config_currency");
+		$default_currency = $this->session->data['currency'];
+		$convert_from_IDR = $this->currency->convert(27000, "IDR", 'USD');
+		$this->response->setOutput(json_encode(array(
+    		'currency_code' => $this->session->data['currency'],
+    		'default'  => $default_currency,
+    		'currency' => $this->currency->has("IDR"),
+    		'convert_from_IDR' => $convert_from_IDR,
+    		'format'   => $this->currency->format($convert_from_IDR, "IDR"),
+			'length' => $this->length->getUnit(2),
+			'length_format' => $this->length->format(3, 1),
+			'length_convert' => $this->length->convert(3, 1, 2)
+		)));
+
+		// $this->load->model('localisation/zone');
+		// $this->load->model('shipping/jne');
+
+		// $zone = $this->model_localisation_zone->getZonesByCountryId(100);
+
+		// $c = array_filter($zone, function($z){
+		// 	return (int) $z['status'] && $z['zone_id'] == 1515;
+		// });
+
+		// $c = array_pop($c);
+		// $provinsi = $c['name'];
+
+ 	// 	$JNE = $this->model_shipping_jne->populateJNE();
+
+ 	// 	$zone_sort  = $JNE::OrderProvinsi( $zone );
+ 	// 	$cities 	= $JNE->getCitiesByProvinceOnGroup( $provinsi );
+
+ 		/*
+		$data = $JNE->getData( true );
+		// $data = array_splice($data, 0, 10);
+
+		$rows = array_filter($data, function($_d) use($provinsi){
+			return preg_match('/'. $provinsi .'/', $_d['provinsi']);
+		});
+
+		$cities = array();
+		foreach( $rows as $index => $row ){
+			$cities[$row['kota']][$index] = $row['kecamatan'];
+		}	
+		*/
+  //   	$this->response->setOutput(json_encode(array(
+  //   		'zone' => $zone,
+  //   		'zone_sort' => $zone_sort,
+  //   		'cities' => $cities,
+		// )));
+	}
+
+	private function _jneConvertion( $type, $output, $product ){
+		$_default_class_id = array(
+			'weight' 	=> '1', 	// kg
+			'length' 	=> '1', 	// cm
+			'currency' 	=> 'IDR' 	// rp
+		);
+
+		if( $type == 'weight' ){
+
+			if( $product['weight'] == 0 ) return 1.00;
+
+			$class_id   = $_default_class_id['weight'];
+			$p_class_id = $product['weight_class_id'];
+
+			if( $output == 'convert' ){
+				return $p_class_id != $class_id ? 
+						$this->weight->convert($product['weight'], $p_class_id, $class_id) :
+						$product['weight'] ;
+			}
+			else if( $output == 'format' ){
+				return $p_class_id != $class_id ? 
+						$this->weight->format($product['weight'], $p_class_id, $class_id) :
+						$this->weight->format($product['weight'], $class_id) ;
+			}
+
+		} elseif( $type == 'dimension' ) {
+
+			if($product['length'] == 0 || $product['width'] == 0 || $product['height'] == 0) return array();
+
+			$class_id   = $_default_class_id['length'];
+			$p_class_id = $product['length_class_id'];
+
+			if( $output == 'convert' ){
+				return array(
+					'length' => $p_class_id != $class_id ? 
+									$this->length->convert($product['length'], $p_class_id, $class_id) :
+									$product['length'], 
+					'width' => $p_class_id != $class_id ? 
+									$this->length->convert($product['width'], $p_class_id, $class_id) :
+									$product['width'],
+					'height' => $p_class_id != $class_id ? 
+									$this->length->convert($product['height'], $p_class_id, $class_id) :
+									$product['height'] 
+
+				);
+			}
+			else if( $output == 'format' ){
+				return array(
+					'length' => $p_class_id != $class_id ? 
+									$this->length->format($product['length'], $p_class_id, $class_id) :
+									$this->length->format($product['length'], $class_id), 
+					'width' => $p_class_id != $class_id ? 
+									$this->length->format($product['width'], $p_class_id, $class_id) :
+									$this->length->format($product['width'], $class_id), 
+					'height' => $p_class_id != $class_id ? 
+									$this->length->format($product['height'], $p_class_id, $class_id) :
+									$this->length->format($product['height'], $class_id), 
+
+				);
+			}
+
+		} elseif( $type == 'tolerance' ) {
+
+        	$tolerance  = $this->config->get('jne_tolerance');
+
+			$weight = $this->_jneConvertion( 'weight', 'convert', $product );
+			if( $weight > 1 ){
+				$_weights   = $this->_floor_dec($weight, 2);
+				$intval     = intval($weight);
+				$diff       = $_weights - $intval;
+				$weight_jne = $diff > $tolerance ? ceil($weight) : $intval;
+            } else {
+            	$weight_jne = 1;
+            }
+
+            return $weight_jne;
+		}
+
+		return null;
+	}
+
+	private function _floor_dec($number, $precision = 1, $separator = '.')
+	{
+	    $numberpart=explode($separator,$number);
+	    $numberpart[1]=substr_replace($numberpart[1],$separator,$precision,0);
+	    if($numberpart[0]>=0)
+	    {$numberpart[1]=floor($numberpart[1]);}
+	    else
+	    {$numberpart[1]=ceil($numberpart[1]);}
+
+	    $ceil_number= array($numberpart[0],$numberpart[1]);
+	    return implode($separator,$ceil_number);
 	}
 }
 ?>
