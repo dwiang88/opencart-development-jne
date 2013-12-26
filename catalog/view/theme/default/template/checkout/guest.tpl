@@ -83,6 +83,17 @@
   <span class="required">*</span> <?php echo $entry_zone; ?><br />
   <select name="zone_id" class="large-field">
   </select>
+  <!-- JNE -->
+  <div id="checkout_city" style="display:
+  <?php echo (isset($country_id) && $country_id == 100) ? 'block' : 'none' ; ?>">
+  <br />
+  <br />
+  <span class="required">*</span> <?php echo $entry_city; ?><br />
+  <select name="city_id" class="large-field">
+    <option><?php echo $text_select; ?></option>
+  </select>
+  </div>
+  <!-- /JNE -->
   <br />
   <br />
   <br />
@@ -148,9 +159,17 @@ $('#payment-address input[name=\'customer_group_id\']:checked').trigger('change'
 //--></script> 
 <script type="text/javascript"><!--
 $('#payment-address select[name=\'country_id\']').bind('change', function() {
-	if (this.value == '') return;
+  var value = this.value;
+	if ( value == '') return;
+  else {
+    if( value == 100 )
+      $('#checkout_city').show();
+    else
+      $('#checkout_city').hide();
+  }
+  
 	$.ajax({
-		url: 'index.php?route=checkout/checkout/country&country_id=' + this.value,
+		url: 'index.php?route=checkout/checkout/country&country_id=' + value,
 		dataType: 'json',
 		beforeSend: function() {
 			$('#payment-address select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
@@ -182,11 +201,78 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
 			}
 			
 			$('#payment-address select[name=\'zone_id\']').html(html);
+
+      if(value == 100)
+        $('#payment-address select[name=\'zone_id\']').trigger('change');
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 		}
 	});
+});
+
+// JNE cb zone
+$('#payment-address select[name=\'zone_id\']').bind('change', function() {
+  var country_id = $('select[name=\'country_id\']').val();
+  var zone_id = this.value ? this.value : '<?php echo $zone_id; ?>';
+
+  console.log('zone_id',  zone_id);
+
+  // indonesia only (country id = 100)
+  if( !zone_id || !country_id || country_id != 100 ) return false;
+
+  $.ajax({
+    url: 'index.php?route=checkout/cart/jneTax&act=city&province=' + zone_id,
+    dataType: 'json',
+    beforeSend: function() {
+      $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
+    },
+    complete: function() {
+      $('.wait').remove();
+    },      
+    success: function(json) {
+      if (json['postcode_required'] == '1') {
+        $('#postcode-required').show();
+      } else {
+        $('#postcode-required').hide();
+      }
+      
+      var $cb = $('select[name=\'city_id\']');
+      $cb.html('<option value=""><?php echo $text_select; ?></option>');
+
+      $.each(json['data'], function(key, cat) {
+        // create group
+        var group = $('<optgroup>', {
+          label: key
+        });
+        // option combobox kota
+        $.each(cat, function(k, v) {
+          var option = $("<option/>", { value: k, text : v });
+
+          if( k == '<?php echo $city_id; ?>' ){
+            option.prop('selected', true);
+          }
+
+          option.appendTo(group);
+        });
+        // add to group
+        group.appendTo($cb);
+      });
+
+      $('#payment-address select[name=\'city_id\']').trigger('change');
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+});
+
+$('#payment-address select[name=\'city_id\']').change(function() {
+  var selected = $("option:selected", this);
+  var city = selected.parent()[0].label + ', ' + selected.text();
+  // console.log(city);
+  $('#payment-address input[name=\'city\']').val(city)
 });
 
 $('#payment-address select[name=\'country_id\']').trigger('change');

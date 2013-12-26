@@ -1,6 +1,11 @@
 <?php  
 class ControllerCheckoutCheckout extends Controller { 
 	public function index() {
+
+		echo '<pre>';
+        echo print_r($_SESSION, 1);
+        echo '</pre>';
+
 		// Validate cart has products and has stock.
 		if ((!$this->cart->hasProducts() && empty($this->session->data['vouchers'])) || (!$this->cart->hasStock() && !$this->config->get('config_stock_checkout'))) {
 	  		$this->redirect($this->url->link('checkout/cart'));
@@ -86,6 +91,11 @@ class ControllerCheckoutCheckout extends Controller {
   	}
 	
 	public function country() {
+
+		if( $this->request->get['country_id'] == 100 ) {
+			return $this->forward('checkout/cart/jneTax');
+		}
+
 		$json = array();
 		
 		$this->load->model('localisation/country');

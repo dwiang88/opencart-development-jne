@@ -139,6 +139,16 @@ class ControllerCheckoutGuest extends Controller {
 		} else {
 			$this->data['zone_id'] = '';
 		}
+
+		if (isset($this->session->data['guest']['payment']['city_id'])) {
+			$this->data['city_id'] = $this->session->data['guest']['payment']['city_id'];	
+		} elseif (isset($this->session->data['shipping_city_id'])) {
+			$this->data['city_id'] = $this->session->data['shipping_city_id'];						
+		} else {
+			$this->data['city_id'] = '';
+		}
+		
+		$this->data['entry_country'] = $this->language->get('entry_country');
 					
 		$this->load->model('localisation/country');
 		
