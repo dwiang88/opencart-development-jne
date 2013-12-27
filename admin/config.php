@@ -8,6 +8,19 @@ define('HTTPS_SERVER', 'http://localhost/opencart-development-jne/admin/');
 define('HTTPS_CATALOG', 'http://localhost/opencart-development-jne/');
 
 // DIR
+define('ROOT', dirname(__FILE__));
+define('DIR_APPLICATION', ROOT . '/admin/');
+define('DIR_SYSTEM', ROOT . '/system/');
+define('DIR_DATABASE', ROOT . '/system/database/');
+define('DIR_LANGUAGE', ROOT . '/admin/language/');
+define('DIR_TEMPLATE', ROOT . '/admin/view/template/');
+define('DIR_CONFIG', ROOT . '/system/config/');
+define('DIR_IMAGE', ROOT . '/image/');
+define('DIR_CACHE', ROOT . '/system/cache/');
+define('DIR_DOWNLOAD', ROOT . '/download/');
+define('DIR_LOGS', ROOT . '/system/logs/');
+define('DIR_CATALOG', ROOT . '/catalog/');
+
 // define('DIR_APPLICATION', '/var/www/opencart-development-jne/admin/');
 // define('DIR_SYSTEM', '/var/www/opencart-development-jne/system/');
 // define('DIR_DATABASE', '/var/www/opencart-development-jne/system/database/');
@@ -19,18 +32,6 @@ define('HTTPS_CATALOG', 'http://localhost/opencart-development-jne/');
 // define('DIR_DOWNLOAD', '/var/www/opencart-development-jne/download/');
 // define('DIR_LOGS', '/var/www/opencart-development-jne/system/logs/');
 // define('DIR_CATALOG', '/var/www/opencart-development-jne/catalog/');
-
-define('DIR_APPLICATION', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/admin/');
-define('DIR_SYSTEM', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/system/');
-define('DIR_DATABASE', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/system/database/');
-define('DIR_LANGUAGE', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/admin/language/');
-define('DIR_TEMPLATE', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/admin/view/template/');
-define('DIR_CONFIG', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/system/config/');
-define('DIR_IMAGE', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/image/');
-define('DIR_CACHE', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/system/cache/');
-define('DIR_DOWNLOAD', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/download/');
-define('DIR_LOGS', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/system/logs/');
-define('DIR_CATALOG', 'D:\WampDeveloper\Websites\DefaultWebsite\webroot\opencart-development-jne/catalog/');
 
 // DB
 define('DB_DRIVER', 'mysql');
