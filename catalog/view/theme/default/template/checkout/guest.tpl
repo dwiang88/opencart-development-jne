@@ -83,9 +83,9 @@
   <span class="required">*</span> <?php echo $entry_zone; ?><br />
   <select name="zone_id" class="large-field">
   </select>
-  <!-- JNE -->
-  <div id="payment_address_city" style="display:
-  <?php echo (isset($country_id) && $country_id == 100) ? 'block' : 'none' ; ?>">
+  <!-- ================ JNE ================ -->
+  <div id="cb-payment-address-city" 
+       style="display:<?php echo ($country_id == 100) ? 'block' : 'none' ; ?>">
   <br />
   <br />
   <span class="required">*</span> <?php echo $entry_city; ?><br />
@@ -93,7 +93,7 @@
     <option value=""><?php echo $text_select; ?></option>
   </select>
   </div>
-  <!-- /JNE -->
+  <!-- ================ /JNE ================ -->
   <br />
   <br />
   <br />
@@ -163,9 +163,9 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
 	if ( value == '') return;
   else {
     if( value == 100 )
-      $('#payment_address_city').show();
+      $('#cb-payment-address-city').show();
     else
-      $('#payment_address_city').hide();
+      $('#cb-payment-address-city').hide();
   }
   
 	$.ajax({
@@ -210,6 +210,7 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
 	});
 });
 
+/* ----------------- JNE ----------------- */
 // JNE cb zone
 $('#payment-address select[name=\'zone_id\']').bind('change', function() {
   var country_id = $('select[name=\'country_id\']').val();
@@ -274,9 +275,9 @@ $('#payment-address select[name=\'city_id\']').change(function() {
     $('#payment-address input[name=\'city\']').val('');
     return;
   }
-  // console.log(city);
   $('#payment-address input[name=\'city\']').val(city);
 });
+/* ----------------- JNE ----------------- */
 
 $('#payment-address select[name=\'country_id\']').trigger('change');
 //--></script>

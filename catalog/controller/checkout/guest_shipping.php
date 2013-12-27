@@ -78,6 +78,7 @@ class ControllerCheckoutGuestShipping extends Controller {
 			$this->data['zone_id'] = '';
 		}
 
+		/* ----------------- JNE ----------------- */
 		if (isset($this->session->data['guest']['shipping']['city_id'])) {
 			$this->data['city_id'] = $this->session->data['guest']['shipping']['city_id'];	
 		} elseif (isset($this->session->data['shipping_city_id'])) {
@@ -86,6 +87,7 @@ class ControllerCheckoutGuestShipping extends Controller {
 			$this->data['city_id'] = '';
 		}
 		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
+		/* ----------------- /JNE ----------------- */
 					
 		$this->load->model('localisation/country');
 		
@@ -153,9 +155,11 @@ class ControllerCheckoutGuestShipping extends Controller {
 				$json['error']['zone'] = $this->language->get('error_zone');
 			}	
 			
+			/* ----------------- JNE ----------------- */
 			if ( $this->request->post['country_id'] == 100 && isset($this->request->post['city_id']) && $this->request->post['city_id'] == '') {
 				$json['error']['city_id'] = $this->language->get('error_city_id');
 			}
+			/* ----------------- /JNE ----------------- */
 		}
 		
 		if (!$json) {
@@ -168,6 +172,9 @@ class ControllerCheckoutGuestShipping extends Controller {
 			$this->session->data['guest']['shipping']['city'] = $this->request->post['city'];
 			$this->session->data['guest']['shipping']['country_id'] = $this->request->post['country_id'];
 			$this->session->data['guest']['shipping']['zone_id'] = $this->request->post['zone_id'];
+			/* ----------------- JNE ----------------- */
+			$this->session->data['guest']['shipping']['city_id'] = $this->request->post['city_id'];
+			/* ----------------- /JNE ----------------- */
 			
 			$this->load->model('localisation/country');
 			
@@ -199,6 +206,9 @@ class ControllerCheckoutGuestShipping extends Controller {
 			
 			$this->session->data['shipping_country_id'] = $this->request->post['country_id'];
 			$this->session->data['shipping_zone_id'] = $this->request->post['zone_id'];
+			/* ----------------- JNE ----------------- */
+			$this->session->data['shipping_city_id'] = $this->request->post['city_id'];
+			/* ----------------- /JNE ----------------- */
 			$this->session->data['shipping_postcode'] = $this->request->post['postcode'];	
 			
 			unset($this->session->data['shipping_method']);	

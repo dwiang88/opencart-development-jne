@@ -45,13 +45,16 @@
     <td><select name="zone_id" class="large-field">
       </select></td>
   </tr>
-  <tr id="shipping_address_city" style="display:<?php echo (isset($country_id) && $country_id == 100) ? 'block' : 'none' ; ?>">
+  <!-- ================ JNE ================ -->
+  <tr id="cb-shipping-address-city" 
+      style="display:<?php echo ($country_id == 100) ? 'table-row' : 'none' ; ?>">
     <td><span class="required">*</span> <?php echo $entry_city; ?></td>
     <td><select name="city_id" class="large-field">
         <option value=""><?php echo $text_select; ?></option>
         </select>
     </td>
-  </tr>
+  </tr>>
+  <!-- ================ / ================ -->
 </table>
 <br />
 <div class="buttons">
@@ -63,9 +66,9 @@ $('#shipping-address select[name=\'country_id\']').bind('change', function() {
   if ( value == '') return;
   else {
     if( value == 100 )
-      $('#shipping_address_city').show();
+      $('#cb-shipping-address-city').show();
     else
-      $('#shipping_address_city').hide();
+      $('#cb-shipping-address-city').hide();
   }
 
 	$.ajax({
@@ -135,6 +138,8 @@ $('#shipping-address select[name=\'zone_id\']').bind('change', function() {
       } else {
         $('#postcode-required').hide();
       }
+
+      console.log('shipping-address:city_id', '<?php echo $city_id; ?>');
       
       var $cb = $('select[name=\'city_id\']');
       $cb.html('<option value=""><?php echo $text_select; ?></option>');
@@ -174,7 +179,7 @@ $('#shipping-address select[name=\'city_id\']').change(function() {
     $('#shipping-address input[name=\'city\']').val('');
     return;
   }
-  $('#payment-address input[name=\'city\']').val(city);
+  $('#shipping-address input[name=\'city\']').val(city);
 });
 
 $('#shipping-address select[name=\'country_id\']').trigger('change');

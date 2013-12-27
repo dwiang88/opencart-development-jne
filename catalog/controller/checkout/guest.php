@@ -140,15 +140,16 @@ class ControllerCheckoutGuest extends Controller {
 			$this->data['zone_id'] = '';
 		}
 
+		/* ----------------- JNE ----------------- */
 		if (isset($this->session->data['guest']['payment']['city_id'])) {
 			$this->data['city_id'] = $this->session->data['guest']['payment']['city_id'];	
 		} elseif (isset($this->session->data['shipping_city_id'])) {
 			$this->data['city_id'] = $this->session->data['shipping_city_id'];						
 		} else {
 			$this->data['city_id'] = '';
-		}
-		
+		}		
 		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
+		/* ----------------- /JNE ----------------- */
 					
 		$this->load->model('localisation/country');
 		
@@ -264,9 +265,11 @@ class ControllerCheckoutGuest extends Controller {
 				$json['error']['zone'] = $this->language->get('error_zone');
 			}	
 	
+			/* ----------------- JNE ----------------- */
 			if ( $this->request->post['country_id'] == 100 && isset($this->request->post['city_id']) && $this->request->post['city_id'] == '') {
 				$json['error']['city_id'] = $this->language->get('error_city_id');
 			}
+			/* ----------------- /JNE ----------------- */
 		}
 			
 		if (!$json) {
@@ -288,8 +291,10 @@ class ControllerCheckoutGuest extends Controller {
 			$this->session->data['guest']['payment']['city'] = $this->request->post['city'];
 			$this->session->data['guest']['payment']['country_id'] = $this->request->post['country_id'];
 			$this->session->data['guest']['payment']['zone_id'] = $this->request->post['zone_id'];
+			/* ----------------- JNE ----------------- */
 			$this->session->data['guest']['payment']['city_id'] = $this->request->post['city_id'];
-							
+			/* ----------------- /JNE ----------------- */
+
 			$this->load->model('localisation/country');
 			
 			$country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
@@ -363,7 +368,9 @@ class ControllerCheckoutGuest extends Controller {
 				// Default Shipping Address
 				$this->session->data['shipping_country_id'] = $this->request->post['country_id'];
 				$this->session->data['shipping_zone_id'] 	= $this->request->post['zone_id'];
+				/* ----------------- JNE ----------------- */
 				$this->session->data['shipping_city_id'] 	= $this->request->post['city_id'];
+				/* ----------------- /JNE ----------------- */
 				$this->session->data['shipping_postcode'] 	= $this->request->post['postcode'];
 			}
 			

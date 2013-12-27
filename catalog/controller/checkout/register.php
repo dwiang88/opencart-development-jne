@@ -65,13 +65,14 @@ class ControllerCheckoutRegister extends Controller {
       		$this->data['zone_id'] = '';
     	}
 
+		/* ----------------- JNE ----------------- */
 		if (isset($this->session->data['shipping_city_id'])) {
 			$this->data['city_id'] = $this->session->data['shipping_city_id'];						
 		} else {
 			$this->data['city_id'] = '';
 		}
-
 		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
+		/* ----------------- /JNE ----------------- */
 				
 		$this->load->model('localisation/country');
 		
@@ -218,9 +219,11 @@ class ControllerCheckoutRegister extends Controller {
 				$json['error']['zone'] = $this->language->get('error_zone');
 			}
 			
+			/* ----------------- JNE ----------------- */
 			if ( $this->request->post['country_id'] == 100 && isset($this->request->post['city_id']) && $this->request->post['city_id'] == '') {
 				$json['error']['city_id'] = $this->language->get('error_city_id');
 			}
+			/* ----------------- /JNE ----------------- */
 	
 			if ((utf8_strlen($this->request->post['password']) < 4) || (utf8_strlen($this->request->post['password']) > 20)) {
 				$json['error']['password'] = $this->language->get('error_password');

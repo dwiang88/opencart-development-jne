@@ -814,6 +814,10 @@ $('#button-guest-shipping').live('click', function() {
 				if (json['error']['zone']) {
 					$('#shipping-address select[name=\'zone_id\']').after('<span class="error">' + json['error']['zone'] + '</span>');
 				}
+				
+				if (json['error']['city_id']) {
+					$('#shipping-address select[name=\'city_id\']').after('<br/><span class="error">' + json['error']['city_id'] + '</span>');
+				}
 			} else {
 				$.ajax({
 					url: 'index.php?route=checkout/shipping_method',
