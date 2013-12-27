@@ -610,6 +610,7 @@ $('#button-guest').live('click', function() {
 			$('.wait').remove();
 		},			
 		success: function(json) {
+
 			$('.warning, .error').remove();
 			
 			if (json['redirect']) {
@@ -662,8 +663,13 @@ $('#button-guest').live('click', function() {
 				}	
 				
 				if (json['error']['zone']) {
-					$('#payment-address select[name=\'zone_id\'] + br').after('<span class="error">' + json['error']['zone'] + '</span>');
+					$('#payment-address select[name=\'zone_id\']').after('<br/><span class="error">' + json['error']['zone'] + '</span>');
 				}
+				
+				if (json['error']['city_id']) {
+					$('#payment-address select[name=\'city_id\']').after('<br/><span class="error">' + json['error']['city_id'] + '</span>');
+				}
+
 			} else {
 				<?php if ($shipping_required) { ?>	
 				var shipping_address = $('#payment-address input[name=\'shipping_address\']:checked').attr('value');

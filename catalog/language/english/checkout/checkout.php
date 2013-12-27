@@ -67,6 +67,7 @@ $_['entry_postcode']                 = 'Post Code:';
 $_['entry_city']                     = 'City:';
 $_['entry_country']                  = 'Country:';
 $_['entry_zone']                     = 'Region / State:';
+$_['entry_city_id']                  = 'City / Regency:';
 $_['entry_newsletter']               = 'I wish to subscribe to the %s newsletter.';
 $_['entry_shipping'] 	             = 'My delivery and billing addresses are the same.';
 
@@ -89,7 +90,7 @@ $_['error_city']                     = 'City must be between 2 and 128 character
 $_['error_postcode']                 = 'Postcode must be between 2 and 10 characters!';
 $_['error_country']                  = 'Please select a country!';
 $_['error_zone']                     = 'Please select a region / state!';
-$_['error_city_id']                  = 'Please select a city!';
+$_['error_city_id']                  = 'Please select a city / regency!';
 $_['error_agree']                    = 'Warning: You must agree to the %s!';
 $_['error_address']                  = 'Warning: You must select address!';
 $_['error_shipping']                 = 'Warning: Shipping method required!';

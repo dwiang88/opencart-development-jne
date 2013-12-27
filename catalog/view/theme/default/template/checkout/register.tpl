@@ -96,7 +96,7 @@
 </select>
 
   <!-- JNE -->
-  <div id="checkout_city" style="display:
+  <div id="payment_address_city" style="display:
   <?php echo (isset($country_id) && $country_id == 100) ? 'block' : 'none' ; ?>">
   <br />
   <br />
@@ -184,9 +184,9 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
   if ( value == '') return;
   else {
     if( value == 100 )
-      $('#checkout_city').show();
+      $('#payment_address_city').show();
     else
-      $('#checkout_city').hide();
+      $('#payment_address_city').hide();
   }
 
 	$.ajax({
@@ -224,8 +224,7 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
       
       $('#payment-address select[name=\'zone_id\']').html(html);
 
-      if(value == 100)
-        $('#payment-address select[name=\'zone_id\']').trigger('change');
+      if(value == 100) $('#payment-address select[name=\'zone_id\']').trigger('change');
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -238,7 +237,7 @@ $('#payment-address select[name=\'zone_id\']').bind('change', function() {
   var country_id = $('select[name=\'country_id\']').val();
   var zone_id = this.value ? this.value : '<?php echo $zone_id; ?>';
 
-  console.log('zone_id',  zone_id);
+  console.log('payment-address:register:zone_id',  zone_id);
 
   // indonesia only (country id = 100)
   if( !zone_id || !country_id || country_id != 100 ) return false;

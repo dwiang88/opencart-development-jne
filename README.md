@@ -44,7 +44,7 @@ Admin -> System -> localisation -> zone
 4. Edit dimension & berat produk
 
 http://www.apple.com/iphone-4s/specs/
-http://store.apple.com/us/buy-mac/macbook-air?aid=AIC-WWW-NAUS-K2-CONFIGURE-MACBOOKAIR
+http://www.apple.com/macbook-pro/specs-retina/
 http://www.apple.com/macbook-air/specs.html
 
 

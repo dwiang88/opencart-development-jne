@@ -71,7 +71,7 @@ class ControllerCheckoutRegister extends Controller {
 			$this->data['city_id'] = '';
 		}
 
-		$this->data['entry_country'] = $this->language->get('entry_country');
+		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
 				
 		$this->load->model('localisation/country');
 		
