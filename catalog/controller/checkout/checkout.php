@@ -93,7 +93,7 @@ class ControllerCheckoutCheckout extends Controller {
 	public function country() {
 
 		if( $this->request->get['country_id'] == 100 ) {
-			return $this->forward('checkout/cart/jneTax');
+			return $this->forward('checkout/jne/tax');
 		}
 
 		$json = array();

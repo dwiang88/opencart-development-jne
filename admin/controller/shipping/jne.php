@@ -117,6 +117,26 @@ class ControllerShippingJne extends Controller {
 				
 		$this->response->setOutput($this->render());
 	}
+
+	public function install(){
+		$this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "order` LIKE 'payment_city_id'");
+		if( !$this->db->countAffected() ){
+		 	$add = array(
+		 		DB_PREFIX . 'address' => array(
+		 			'city_id' => 'zone_id'
+	 			),
+		 		DB_PREFIX . 'order'   => array(
+		 			'payment_city_id'  => 'payment_zone_id', 
+		 			'shipping_city_id' => 'shipping_zone_id'
+	 			)
+	 		);
+	 		foreach ($add as $table => $cols) {
+	 			foreach ($cols as $column => $after) {
+	 				$this->db->query("ALTER TABLE $table ADD $column int( 11 ) NULL AFTER $after");
+	 			}
+	 		}
+		}
+	}
 	
 	protected function validate() {
 		if (!$this->user->hasPermission('modify', 'shipping/jne')) {

@@ -15,6 +15,10 @@ class ControllerCheckoutSuccess extends Controller {
 			unset($this->session->data['reward']);
 			unset($this->session->data['voucher']);
 			unset($this->session->data['vouchers']);
+			
+			/* ----------------- JNE ----------------- */
+			unset($this->session->data['shipping_city_id']);
+			/* ----------------- JNE ----------------- */
 		}	
 									   
 		$this->language->load('checkout/success');

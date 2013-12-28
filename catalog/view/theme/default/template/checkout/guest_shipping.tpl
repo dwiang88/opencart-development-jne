@@ -40,21 +40,21 @@
         <?php } ?>
       </select></td>
   </tr>
-  <tr>
+  <tr data-selected="guest-shipping-<?php echo $zone_id ?>">
     <td><span class="required">*</span> <?php echo $entry_zone; ?></td>
     <td><select name="zone_id" class="large-field">
       </select></td>
   </tr>
   <!-- ================ JNE ================ -->
-  <tr id="cb-shipping-address-city" 
+  <tr id="cb-shipping-address-city" data-selected="guest-shipping-<?php echo $city_id ?>"
       style="display:<?php echo ($country_id == 100) ? 'table-row' : 'none' ; ?>">
     <td><span class="required">*</span> <?php echo $entry_city; ?></td>
     <td><select name="city_id" class="large-field">
         <option value=""><?php echo $text_select; ?></option>
         </select>
     </td>
-  </tr>>
-  <!-- ================ / ================ -->
+  </tr>
+  <!-- ================ /JNE ================ -->
 </table>
 <br />
 <div class="buttons">
@@ -105,7 +105,7 @@ $('#shipping-address select[name=\'country_id\']').bind('change', function() {
 			
 			$('#shipping-address select[name=\'zone_id\']').html(html);
 
-      if(value == 100) $('#payment-address select[name=\'zone_id\']').trigger('change');
+      if(value == 100) $('#shipping-address select[name=\'zone_id\']').trigger('change');
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -113,18 +113,26 @@ $('#shipping-address select[name=\'country_id\']').bind('change', function() {
 	});
 });
 
-// JNE cb zone
-$('#shipping-address select[name=\'zone_id\']').bind('change', function() {
+/* ----------------- JNE ----------------- */
+
+var $inputCity = $('#shipping-address input[name=\'city\']');
+var $cbZone    = $('#shipping-address select[name=\'zone_id\']');
+var $cbCity    = $('#shipping-address select[name=\'city_id\']');
+
+// JNE combobox zone
+$cbZone.bind('change', function() {
+
   var country_id = $('select[name=\'country_id\']').val();
-  var zone_id = this.value ? this.value : '<?php echo $zone_id; ?>';
+  var textSelected = $(this).find('option:selected').text();
+  var zone_id = this.value ? textSelected : '<?php echo $zone_id; ?>';
 
   console.log('shipping-address:zone_id',  zone_id);
 
   // indonesia only (country id = 100)
-  if( !zone_id || !country_id || country_id != 100 ) return false;
+  if( !zone_id || !country_id || country_id != 100 || !$cbCity.length ) return false;
 
   $.ajax({
-    url: 'index.php?route=checkout/cart/jneTax&act=city&province=' + zone_id,
+    url: 'index.php?route=checkout/jne/tax&act=city&province=' + zone_id,
     dataType: 'json',
     beforeSend: function() {
       $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
@@ -139,10 +147,12 @@ $('#shipping-address select[name=\'zone_id\']').bind('change', function() {
         $('#postcode-required').hide();
       }
 
-      console.log('shipping-address:city_id', '<?php echo $city_id; ?>');
+      console.group('shipping-address');
+      console.log('city_id', '<?php echo $city_id; ?>');
+      console.log('data', json['data']);
+      console.groupEnd();
       
-      var $cb = $('select[name=\'city_id\']');
-      $cb.html('<option value=""><?php echo $text_select; ?></option>');
+      $cbCity.html('<option value=""><?php echo $text_select; ?></option>');
 
       $.each(json['data'], function(key, cat) {
         // create group
@@ -160,10 +170,10 @@ $('#shipping-address select[name=\'zone_id\']').bind('change', function() {
           option.appendTo(group);
         });
         // add to group
-        group.appendTo($cb);
+        group.appendTo($cbCity);
       });
 
-      $('#shipping-address select[name=\'city_id\']').trigger('change');
+      $cbCity.trigger('change');
 
     },
     error: function(xhr, ajaxOptions, thrownError) {
@@ -172,15 +182,18 @@ $('#shipping-address select[name=\'zone_id\']').bind('change', function() {
   });
 });
 
-$('#shipping-address select[name=\'city_id\']').change(function() {
+// JNE combobox city
+$cbCity.change(function() {
   var selected = $("option:selected", this);
   var city = selected.parent()[0].label + ', ' + selected.text();
   if( !selected.val() ){
-    $('#shipping-address input[name=\'city\']').val('');
+    $inputCity.val('');
     return;
   }
-  $('#shipping-address input[name=\'city\']').val(city);
+  $inputCity.val(city);
 });
+
+/* ----------------- /JNE ----------------- */
 
 $('#shipping-address select[name=\'country_id\']').trigger('change');
 //--></script>

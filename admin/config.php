@@ -8,7 +8,7 @@ define('HTTPS_SERVER', 'http://localhost/opencart-development-jne/admin/');
 define('HTTPS_CATALOG', 'http://localhost/opencart-development-jne/');
 
 // DIR
-define('ROOT', dirname(__FILE__));
+define('ROOT', dirname(dirname(__FILE__)));
 define('DIR_APPLICATION', ROOT . '/admin/');
 define('DIR_SYSTEM', ROOT . '/system/');
 define('DIR_DATABASE', ROOT . '/system/database/');

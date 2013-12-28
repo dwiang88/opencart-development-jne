@@ -255,13 +255,18 @@ class ControllerCheckoutRegister extends Controller {
 				$this->session->data['payment_address_id'] = $this->customer->getAddressId();
 				$this->session->data['payment_country_id'] = $this->request->post['country_id'];
 				$this->session->data['payment_zone_id'] = $this->request->post['zone_id'];
+				/* ----------------- JNE ----------------- */
+				$this->session->data['payment_city_id'] = $this->request->post['city_id'];
+				/* ----------------- /JNE ----------------- */
 									
 				if (!empty($this->request->post['shipping_address'])) {
 					$this->session->data['shipping_address_id'] = $this->customer->getAddressId();
 					$this->session->data['shipping_country_id'] = $this->request->post['country_id'];
-					$this->session->data['shipping_zone_id'] = $this->request->post['zone_id'];
-					$this->session->data['shipping_city_id'] = $this->request->post['city_id'];
-					$this->session->data['shipping_postcode'] = $this->request->post['postcode'];					
+					$this->session->data['shipping_zone_id']  = $this->request->post['zone_id'];
+					$this->session->data['shipping_postcode'] = $this->request->post['postcode'];	
+					/* ----------------- JNE ----------------- */
+					$this->session->data['shipping_city_id'] = $this->request->post['city_id'];	
+					/* ----------------- /JNE ----------------- */			
 				}
 			} else {
 				$json['redirect'] = $this->url->link('account/success');

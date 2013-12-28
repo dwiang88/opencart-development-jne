@@ -332,6 +332,7 @@ class ControllerCheckoutGuest extends Controller {
 			// Default Payment Address
 			$this->session->data['payment_country_id']	= $this->request->post['country_id'];
 			$this->session->data['payment_zone_id']		= $this->request->post['zone_id'];
+			$this->session->data['payment_city_id']		= $this->request->post['city_id'];
 			
 			if ($this->session->data['guest']['shipping_address']) {
 				$this->session->data['guest']['shipping']['firstname'] = $this->request->post['firstname'];

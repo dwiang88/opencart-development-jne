@@ -153,6 +153,12 @@ class ControllerCheckoutConfirm extends Controller {
 			$data['payment_country'] = $payment_address['country'];
 			$data['payment_country_id'] = $payment_address['country_id'];
 			$data['payment_address_format'] = $payment_address['address_format'];
+
+			/* ----------------- JNE ----------------- */
+			if( isset($payment_address['city_id']) ){
+				$data['jne']['payment_city_id'] = $payment_address['city_id'];
+			}
+			/* ----------------- JNE ----------------- */
 		
 			if (isset($this->session->data['payment_method']['title'])) {
 				$data['payment_method'] = $this->session->data['payment_method']['title'];
@@ -187,6 +193,12 @@ class ControllerCheckoutConfirm extends Controller {
 				$data['shipping_country'] = $shipping_address['country'];
 				$data['shipping_country_id'] = $shipping_address['country_id'];
 				$data['shipping_address_format'] = $shipping_address['address_format'];
+
+				/* ----------------- JNE ----------------- */
+				if( isset($shipping_address['city_id']) ){
+					$data['jne']['shipping_city_id'] = $shipping_address['city_id'];
+				}
+				/* ----------------- JNE ----------------- */
 			
 				if (isset($this->session->data['shipping_method']['title'])) {
 					$data['shipping_method'] = $this->session->data['shipping_method']['title'];

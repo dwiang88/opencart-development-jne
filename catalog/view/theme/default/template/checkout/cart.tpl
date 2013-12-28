@@ -377,7 +377,8 @@ $('select[name=\'country_id\']').bind('change', function() {
 // JNE cb zone
 $('select[name=\'zone_id\']').bind('change', function() {
   var country_id = $('select[name=\'country_id\']').val();
-  var zone_id = this.value ? this.value : '<?php echo $zone_id; ?>';
+  var textSelected = $(this).find('option:selected').text();
+  var zone_id = this.value ? textSelected : '<?php echo $zone_id; ?>';
 
   console.log('zone_id',  zone_id);
 
@@ -385,7 +386,7 @@ $('select[name=\'zone_id\']').bind('change', function() {
   if( !zone_id || !country_id || country_id != 100 ) return false;
 
   $.ajax({
-    url: 'index.php?route=checkout/cart/jneTax&act=city&province=' + zone_id,
+    url: 'index.php?route=checkout/jne/tax&act=city&province=' + zone_id,
     dataType: 'json',
     beforeSend: function() {
       $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');

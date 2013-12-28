@@ -831,7 +831,7 @@ class ControllerCheckoutCart extends Controller {
 	public function country() {
 
 		if( $this->request->get['country_id'] == 100 ) {
-			return $this->forward('checkout/cart/jneTax');
+			return $this->forward('checkout/jne/tax');
 		}
 
 		$json = array();
@@ -859,7 +859,6 @@ class ControllerCheckoutCart extends Controller {
 	}
 
 	/* JNE */
-
 	public function jneTax(){
 
 		$data = array();
@@ -901,33 +900,6 @@ class ControllerCheckoutCart extends Controller {
 		
 		$this->response->setOutput(json_encode($json));
 	}
-
-	public function jne() {
-		// $default_currency = $this->config->get("config_currency");
-		$default_currency = $this->session->data['currency'];
-		$convert_from_IDR = $this->currency->convert(27000, "IDR", 'USD');
-		$this->response->setOutput(json_encode(array(
-    		'currency_code' => $this->session->data['currency'],
-    		'default'  => $default_currency,
-    		'currency' => $this->currency->has("IDR"),
-    		'convert_from_IDR' => $convert_from_IDR,
-    		'format'   => $this->currency->format($convert_from_IDR, "IDR"),
-			'length' => $this->length->getUnit(2),
-			'length_format' => $this->length->format(3, 1),
-			'length_convert' => $this->length->convert(3, 1, 2)
-		)));
-
-		// $this->load->model('localisation/zone');
-		// $this->load->model('shipping/jne');
-
-		// $zone = $this->model_localisation_zone->getZonesByCountryId(100);
-
-		// $c = array_filter($zone, function($z){
-		// 	return (int) $z['status'] && $z['zone_id'] == 1515;
-		// });
-
-		// $c = array_pop($c);
-		// $provinsi = $c['name'];
-	}
+	/* /JNE */
 }
 ?>

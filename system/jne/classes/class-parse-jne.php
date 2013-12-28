@@ -407,7 +407,7 @@ class Parse_JNE
 		    	if(preg_match('/\b'.$provinsi.'\b/i', $val['name'])) {
 		    		$ordered[$index] = array(
 		    			'index'   => $key,
-		    			'zone_id' => $array[$index]['name'],
+		    			'zone_id' => $index,
 		    			'name'    => $array[$index]['name']
 		    		);
 		    	}    

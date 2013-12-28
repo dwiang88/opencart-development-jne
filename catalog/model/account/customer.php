@@ -19,6 +19,12 @@ class ModelAccountCustomer extends Model {
 		
 		$address_id = $this->db->getLastId();
 
+		/* ----------------- JNE ----------------- */
+		if( isset($data['city_id']) ){
+			$this->db->query("UPDATE `" . DB_PREFIX . "address` SET city_id = '" . (int)$data['city_id'] . "' WHERE address_id = '" . (int)$address_id . "'");
+		}
+		/* ----------------- /JNE ----------------- */
+
       	$this->db->query("UPDATE " . DB_PREFIX . "customer SET address_id = '" . (int)$address_id . "' WHERE customer_id = '" . (int)$customer_id . "'");
 		
 		$this->language->load('mail/customer');
