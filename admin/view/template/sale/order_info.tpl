@@ -206,21 +206,33 @@
             <td><?php echo $text_city; ?></td>
             <td><?php echo $payment_city; ?></td>
           </tr>
-          <?php if ($payment_postcode) { ?>
-          <tr>
-            <td><?php echo $text_postcode; ?></td>
-            <td><?php echo $payment_postcode; ?></td>
-          </tr>
-          <?php } ?>
-          <tr>
-            <td><?php echo $text_zone; ?></td>
-            <td><?php echo $payment_zone; ?></td>
-          </tr>
-          <?php if ($payment_zone_code) { ?>
-          <tr>
-            <td><?php echo $text_zone_code; ?></td>
-            <td><?php echo $payment_zone_code; ?></td>
-          </tr>
+          <?php if ($payment_jne) { ?>
+            <tr>
+              <td><?php echo $text_zone; ?></td>
+              <td><?php echo $payment_jne['provinsi']; ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $text_zone_code; ?></td>
+              <td><?php echo $payment_jne['code']; ?></td>
+            </tr>
+          <?php } else { ?>
+            <?php if ($payment_postcode) { ?>
+            <tr>
+              <td><?php echo $text_postcode; ?></td>
+              <td><?php echo $payment_postcode; ?></td>
+            </tr>
+            <?php } ?>
+            <tr>
+              <td><?php echo $text_zone; ?></td>
+              <td><?php echo $payment_zone; ?></td>
+            </tr>
+            <?php if ($payment_zone_code) { ?>
+            <tr>
+              <td><?php echo $text_zone_code; ?></td>
+              <td><?php echo $payment_zone_code; ?></td>
+            </tr>
+            <?php } ?>
+
           <?php } ?>
           <tr>
             <td><?php echo $text_country; ?></td>
@@ -281,15 +293,26 @@
             <td><?php echo $shipping_postcode; ?></td>
           </tr>
           <?php } ?>
-          <tr>
-            <td><?php echo $text_zone; ?></td>
-            <td><?php echo $shipping_zone; ?></td>
-          </tr>
-          <?php if ($shipping_zone_code) { ?>
-          <tr>
-            <td><?php echo $text_zone_code; ?></td>
-            <td><?php echo $shipping_zone_code; ?></td>
-          </tr>
+          <?php if ($shipping_jne) { ?>
+            <tr>
+              <td><?php echo $text_zone; ?></td>
+              <td><?php echo $shipping_jne['provinsi']; ?></td>
+            </tr>
+            <tr>
+              <td><?php echo $text_zone_code; ?></td>
+              <td><?php echo $shipping_jne['code']; ?></td>
+            </tr>
+          <?php } else { ?>
+            <tr>
+              <td><?php echo $text_zone; ?></td>
+              <td><?php echo $shipping_zone; ?></td>
+            </tr>
+            <?php if ($shipping_zone_code) { ?>
+            <tr>
+              <td><?php echo $text_zone_code; ?></td>
+              <td><?php echo $shipping_zone_code; ?></td>
+            </tr>
+            <?php } ?>
           <?php } ?>
           <tr>
             <td><?php echo $text_country; ?></td>

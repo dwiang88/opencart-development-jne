@@ -172,6 +172,14 @@
                 <span class="error"><?php echo $error_payment_zone; ?></span>
                 <?php } ?></td>
             </tr>
+            <tr id="cb-payment-city">
+              <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
+              <td><select name="payment_city_id">
+                </select>
+                <?php if ($error_payment_city_id) { ?>
+                <span class="error"><?php echo $error_payment_city_id; ?></span>
+                <?php } ?></td>
+            </tr>
           </table>
         </div>
         <div id="tab-shipping" class="vtabs-content">
@@ -247,6 +255,14 @@
                 </select>
                 <?php if ($error_shipping_zone) { ?>
                 <span class="error"><?php echo $error_shipping_zone; ?></span>
+                <?php } ?></td>
+            </tr>
+            <tr id="cb-shipping-city">
+              <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
+              <td><select name="shipping_city_id">
+                </select>
+                <?php if ($error_shipping_city_id) { ?>
+                <span class="error"><?php echo $error_shipping_city_id; ?></span>
                 <?php } ?></td>
             </tr>
           </table>
@@ -710,6 +726,14 @@ $('input[name=\'affiliate\']').autocomplete({
 var payment_zone_id = '<?php echo $payment_zone_id; ?>';
 
 $('select[name=\'payment_country_id\']').bind('change', function() {
+  var value = this.value;
+  if ( value == '') return;
+  else {
+    if( value == 100 )
+      $('#cb-payment-city').show();
+    else
+      $('#cb-payment-city').hide();
+  }
 	$.ajax({
 		url: 'index.php?route=sale/order/country&token=<?php echo $token; ?>&country_id=' + this.value,
 		dataType: 'json',
@@ -743,12 +767,96 @@ $('select[name=\'payment_country_id\']').bind('change', function() {
 			}
 			
 			$('select[name=\'payment_zone_id\']').html(html);
+
+      if( value == 100 ) $('select[name=\'payment_zone_id\']').trigger('change');
+
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 		}
 	});
 });
+
+/* ----------------- JNE ----------------- */
+
+var $paymentInputCity = $('input[name=\'payment_city\']');
+var $paymentCbZone    = $('select[name=\'payment_zone_id\']');
+var $paymentCbCity    = $('select[name=\'payment_city_id\']');
+
+// JNE combobox zone
+$paymentCbZone.bind('change', function() {
+  var country_id = $('select[name=\'payment_country_id\']').val();
+  var textSelected = $(this).find('option:selected').text();
+  var zone_id = this.value ? textSelected : payment_zone_id ;
+
+  console.log('order-payment:zone_id',  zone_id);
+
+  // indonesia only (country id = 100)
+  if( !zone_id || !country_id || country_id != 100 || !$paymentCbCity.length ) return false;
+
+  $.ajax({
+    url: 'index.php?route=sale/order/jneTax&token=<?php echo $token;?>&act=city&province=' + zone_id,
+    dataType: 'json',
+    beforeSend: function() {
+      $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+    },
+    complete: function() {
+      $('.wait').remove();
+    },      
+    success: function(json) {
+      if (json['postcode_required'] == '1') {
+        $('#postcode-required').show();
+      } else {
+        $('#postcode-required').hide();
+      }
+
+      console.group('order-payment');
+      console.log('city_id', '<?php echo $payment_city_id; ?>');
+      console.log('data', json['data']);
+      console.groupEnd();
+      
+      $paymentCbCity.html('<option value=""><?php echo $text_select; ?></option>');
+
+      $.each(json['data'], function(key, cat) {
+        // create group
+        var group = $('<optgroup>', {
+          label: key
+        });
+        // option combobox kota
+        $.each(cat, function(k, v) {
+          var option = $("<option/>", { value: k, text : v });
+
+          if( k == '<?php echo $payment_city_id; ?>' ){
+            option.prop('selected', true);
+          }
+
+          option.appendTo(group);
+        });
+        // add to group
+        group.appendTo($paymentCbCity);
+      });
+
+      // $paymentCbCity.trigger('change');
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+});
+
+// JNE combobox city
+$paymentCbCity.change(function() {
+  var selected = $("option:selected", this);
+  var city = selected.parent()[0].label + ', ' + selected.text();
+  if( !selected.val() ){
+    $paymentInputCity.val('');
+    return;
+  }
+  $paymentInputCity.val(city);
+});
+
+/* ----------------- /JNE ----------------- */
 
 $('select[name=\'payment_country_id\']').trigger('change');
 
@@ -780,6 +888,14 @@ $('select[name=\'payment_address\']').bind('change', function() {
 var shipping_zone_id = '<?php echo $shipping_zone_id; ?>';
 
 $('select[name=\'shipping_country_id\']').bind('change', function() {
+  var value = this.value;
+  if ( value == '') return;
+  else {
+    if( value == 100 )
+      $('#cb-shipping-city').show();
+    else
+      $('#cb-shipping-city').hide();
+  }
 	$.ajax({
 		url: 'index.php?route=sale/order/country&token=<?php echo $token; ?>&country_id=' + this.value,
 		dataType: 'json',
@@ -813,12 +929,95 @@ $('select[name=\'shipping_country_id\']').bind('change', function() {
 			}
 			
 			$('select[name=\'shipping_zone_id\']').html(html);
+
+      if( value == 100 ) $('select[name=\'shipping_zone_id\']').trigger('change');
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 		}
 	});
 });
+
+/* ----------------- JNE ----------------- */
+
+var $shippingInputCity = $('input[name=\'shipping_city\']');
+var $shippingCbZone    = $('select[name=\'shipping_zone_id\']');
+var $shippingCbCity    = $('select[name=\'shipping_city_id\']');
+
+// JNE combobox zone
+$shippingCbZone.bind('change', function() {
+  var country_id = $('select[name=\'shipping_country_id\']').val();
+  var textSelected = $(this).find('option:selected').text();
+  var zone_id = this.value ? textSelected : shipping_zone_id;
+
+  console.log('order-shipping:zone_id',  zone_id);
+
+  // indonesia only (country id = 100)
+  if( !zone_id || !country_id || country_id != 100 || !$shippingCbCity.length ) return false;
+
+  $.ajax({
+    url: 'index.php?route=sale/order/jneTax&token=<?php echo $token;?>&act=city&province=' + zone_id,
+    dataType: 'json',
+    beforeSend: function() {
+      $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+    },
+    complete: function() {
+      $('.wait').remove();
+    },      
+    success: function(json) {
+      if (json['postcode_required'] == '1') {
+        $('#postcode-required').show();
+      } else {
+        $('#postcode-required').hide();
+      }
+
+      console.group('order-shipping');
+      console.log('city_id', '<?php echo $shipping_city_id; ?>');
+      console.log('data', json['data']);
+      console.groupEnd();
+      
+      $shippingCbCity.html('<option value=""><?php echo $text_select; ?></option>');
+
+      $.each(json['data'], function(key, cat) {
+        // create group
+        var group = $('<optgroup>', {
+          label: key
+        });
+        // option combobox kota
+        $.each(cat, function(k, v) {
+          var option = $("<option/>", { value: k, text : v });
+
+          if( k == '<?php echo $shipping_city_id; ?>' ){
+            option.prop('selected', true);
+          }
+
+          option.appendTo(group);
+        });
+        // add to group
+        group.appendTo($shippingCbCity);
+      });
+
+      $shippingCbCity.trigger('change');
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+});
+
+// JNE combobox city
+$shippingCbCity.change(function() {
+  var selected = $("option:selected", this);
+  var city = selected.parent()[0].label + ', ' + selected.text();
+  if( !selected.val() ){
+    $shippingInputCity.val('');
+    return;
+  }
+  $shippingInputCity.val(city);
+});
+
+/* ----------------- /JNE ----------------- */
 
 $('select[name=\'shipping_country_id\']').trigger('change');
 

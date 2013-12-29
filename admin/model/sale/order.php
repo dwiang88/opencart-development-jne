@@ -409,6 +409,13 @@ class ModelSaleOrder extends Model {
                     $amazonOrderId = $amazon_query['amazonus_order_id'];
                 }
             }
+
+            $this->load->model('shipping/jne');
+            $jne = $this->model_shipping_jne->populateJNE();
+            $jneData = $jne->getData();
+
+            $payment_city_id  = $order_query->row['payment_city_id'];
+            $shipping_city_id = $order_query->row['shipping_city_id'];
 			
 			return array(
                 'amazon_order_id'         => $amazonOrderId,
@@ -440,6 +447,10 @@ class ModelSaleOrder extends Model {
 				'payment_zone_code'       => $payment_zone_code,
 				'payment_country_id'      => $order_query->row['payment_country_id'],
 				'payment_country'         => $order_query->row['payment_country'],
+
+				'payment_city_id'		  => $payment_city_id,
+				'payment_jne'         	  => $payment_city_id ? $jneData[$payment_city_id] : null ,
+
 				'payment_iso_code_2'      => $payment_iso_code_2,
 				'payment_iso_code_3'      => $payment_iso_code_3,
 				'payment_address_format'  => $order_query->row['payment_address_format'],
@@ -457,6 +468,10 @@ class ModelSaleOrder extends Model {
 				'shipping_zone_code'      => $shipping_zone_code,
 				'shipping_country_id'     => $order_query->row['shipping_country_id'],
 				'shipping_country'        => $order_query->row['shipping_country'],
+
+				'shipping_city_id'		  => $shipping_city_id,
+				'shipping_jne'         	  => $shipping_city_id ? $jneData[$shipping_city_id] : null ,
+
 				'shipping_iso_code_2'     => $shipping_iso_code_2,
 				'shipping_iso_code_3'     => $shipping_iso_code_3,
 				'shipping_address_format' => $order_query->row['shipping_address_format'],

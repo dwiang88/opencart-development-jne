@@ -518,6 +518,9 @@ class ControllerSaleOrder extends Controller {
 		$this->data['entry_postcode'] = $this->language->get('entry_postcode');
 		$this->data['entry_zone'] = $this->language->get('entry_zone');
 		$this->data['entry_zone_code'] = $this->language->get('entry_zone_code');
+
+		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
+
 		$this->data['entry_country'] = $this->language->get('entry_country');		
 		$this->data['entry_product'] = $this->language->get('entry_product');
 		$this->data['entry_option'] = $this->language->get('entry_option');
@@ -635,6 +638,12 @@ class ControllerSaleOrder extends Controller {
 			$this->data['error_payment_zone'] = '';
 		}
 		
+		if (isset($this->error['payment_city_id'])) {
+			$this->data['error_payment_city_id'] = $this->error['payment_city_id'];
+		} else {
+			$this->data['error_payment_city_id'] = '';
+		}
+		
 		if (isset($this->error['payment_method'])) {
 			$this->data['error_payment_method'] = $this->error['payment_method'];
 		} else {
@@ -681,6 +690,12 @@ class ControllerSaleOrder extends Controller {
 			$this->data['error_shipping_zone'] = $this->error['shipping_zone'];
 		} else {
 			$this->data['error_shipping_zone'] = '';
+		}
+		
+		if (isset($this->error['shipping_city_id'])) {
+			$this->data['error_shipping_city_id'] = $this->error['shipping_city_id'];
+		} else {
+			$this->data['error_shipping_city_id'] = '';
 		}
 		
 		if (isset($this->error['shipping_method'])) {
@@ -979,6 +994,14 @@ class ControllerSaleOrder extends Controller {
 			$this->data['payment_zone_id'] = $order_info['payment_zone_id'];
 		} else {
       		$this->data['payment_zone_id'] = '';
+    	}	
+	    
+		if (isset($this->request->post['payment_city_id'])) {
+      		$this->data['payment_city_id'] = $this->request->post['payment_city_id'];
+    	} elseif (!empty($order_info) || isset($order_info['payment_city_id'])) { 
+			$this->data['payment_city_id'] = $order_info['payment_city_id'];
+		} else {
+      		$this->data['payment_city_id'] = '';
     	}
 						
     	if (isset($this->request->post['payment_method'])) {
@@ -1068,6 +1091,14 @@ class ControllerSaleOrder extends Controller {
 		} else {
       		$this->data['shipping_zone_id'] = '';
     	}	
+	    
+		if (isset($this->request->post['shipping_city_id'])) {
+      		$this->data['shipping_city_id'] = $this->request->post['shipping_city_id'];
+    	} elseif (!empty($order_info) || isset($order_info['shipping_city_id'])) { 
+			$this->data['shipping_city_id'] = $order_info['shipping_city_id'];
+		} else {
+      		$this->data['shipping_city_id'] = '';
+    	}
 						
 		$this->load->model('localisation/country');
 		
@@ -1311,6 +1342,11 @@ class ControllerSaleOrder extends Controller {
   	}
 	
 	public function country() {
+
+		if( $this->request->get['country_id'] == 100 ) {
+			return $this->forward('sale/order/jneTax');
+		}
+
 		$json = array();
 		
 		$this->load->model('localisation/country');
@@ -1626,13 +1662,19 @@ class ControllerSaleOrder extends Controller {
 			$this->data['payment_postcode'] = $order_info['payment_postcode'];
 			$this->data['payment_zone'] = $order_info['payment_zone'];
 			$this->data['payment_zone_code'] = $order_info['payment_zone_code'];
-			$this->data['payment_country'] = $order_info['payment_country'];			
+			$this->data['payment_country'] = $order_info['payment_country'];	
+
+			$this->data['payment_jne'] 		= $order_info['payment_jne'];	
+
 			$this->data['shipping_firstname'] = $order_info['shipping_firstname'];
 			$this->data['shipping_lastname'] = $order_info['shipping_lastname'];
 			$this->data['shipping_company'] = $order_info['shipping_company'];
 			$this->data['shipping_address_1'] = $order_info['shipping_address_1'];
 			$this->data['shipping_address_2'] = $order_info['shipping_address_2'];
 			$this->data['shipping_city'] = $order_info['shipping_city'];
+
+			$this->data['shipping_jne']    = $order_info['shipping_jne'];
+
 			$this->data['shipping_postcode'] = $order_info['shipping_postcode'];
 			$this->data['shipping_zone'] = $order_info['shipping_zone'];
 			$this->data['shipping_zone_code'] = $order_info['shipping_zone_code'];
@@ -2563,6 +2605,48 @@ class ControllerSaleOrder extends Controller {
 		$this->template = 'sale/order_invoice.tpl';
 
 		$this->response->setOutput($this->render());
+	}
+
+	public function jneTax(){
+
+		$data = array();
+		
+		$this->load->model('localisation/zone');
+		$this->load->model('shipping/jne');
+
+		$zone = $this->model_localisation_zone->getZonesByCountryId(100);
+		$JNE  = $this->model_shipping_jne->populateJNE();
+		
+		$act = isset($this->request->get['act']) ? $this->request->get['act'] : null ;
+		switch ($act) {
+			case 'city':
+				$provinsi = $this->request->get['province'];
+
+				$data = $JNE->getCitiesByProvinceOnGroup( $provinsi );
+				$json = array(
+					'postcode_required' => '0',
+					'data' => $data
+				);
+				break;
+			
+			default:
+				$zone = $JNE::OrderProvinsi( $zone );
+
+				if( $jne_zone_allowed = $this->config->get('jne_zone_allowed') ){
+					$jne_zone_allowed = unserialize($this->config->get('jne_zone_allowed'));
+					$zone = array_intersect_key($zone, array_flip($jne_zone_allowed));
+				}
+
+				sort($zone);
+
+				$json = array(
+					'postcode_required' => '0',
+					'zone' => $zone
+				);
+				break;
+		}
+		
+		$this->response->setOutput(json_encode($json));
 	}
 }
 ?>
