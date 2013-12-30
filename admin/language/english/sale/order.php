@@ -157,7 +157,9 @@ $_['entry_country']                           = 'Country:';
 $_['entry_zone']                              = 'Region / State:';
 $_['entry_zone_code']                         = 'Region / State Code:';
 
+/* ----------------- JNE ----------------- */
 $_['entry_city_id']                           = 'City / Regency:';
+/* ----------------- /JNE ----------------- */
 
 $_['entry_product']                           = 'Choose Product:';
 $_['entry_option']                            = 'Choose Option(s):';
@@ -197,7 +199,9 @@ $_['error_postcode']                          = 'Postcode must be between 2 and 
 $_['error_country']                           = 'Please select a country!';
 $_['error_zone']                              = 'Please select a region / state!';
 
+/* ----------------- JNE ----------------- */
 $_['error_city_id']                           = 'Please select a city / regency!';
+/* ----------------- /JNE ----------------- */
 
 $_['error_shipping']                          = 'Warning: Shipping method required!';
 $_['error_payment']                           = 'Warning: Payment method required!';

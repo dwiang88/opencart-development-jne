@@ -74,6 +74,10 @@ class ControllerSaleOrder extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('sale/order');
+
+		echo '<pre>';
+		echo print_r($_SESSION, 1);
+		echo '</pre>';
     	
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_sale_order->editOrder($this->request->get['order_id'], $this->request->post);
@@ -519,7 +523,9 @@ class ControllerSaleOrder extends Controller {
 		$this->data['entry_zone'] = $this->language->get('entry_zone');
 		$this->data['entry_zone_code'] = $this->language->get('entry_zone_code');
 
+		/* ----------------- JNE ----------------- */
 		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
+		/* ----------------- /JNE ----------------- */
 
 		$this->data['entry_country'] = $this->language->get('entry_country');		
 		$this->data['entry_product'] = $this->language->get('entry_product');
@@ -638,11 +644,13 @@ class ControllerSaleOrder extends Controller {
 			$this->data['error_payment_zone'] = '';
 		}
 		
+		/* ----------------- JNE ----------------- */
 		if (isset($this->error['payment_city_id'])) {
 			$this->data['error_payment_city_id'] = $this->error['payment_city_id'];
 		} else {
 			$this->data['error_payment_city_id'] = '';
 		}
+		/* ----------------- /JNE ----------------- */
 		
 		if (isset($this->error['payment_method'])) {
 			$this->data['error_payment_method'] = $this->error['payment_method'];
@@ -692,11 +700,13 @@ class ControllerSaleOrder extends Controller {
 			$this->data['error_shipping_zone'] = '';
 		}
 		
+		/* ----------------- JNE ----------------- */
 		if (isset($this->error['shipping_city_id'])) {
 			$this->data['error_shipping_city_id'] = $this->error['shipping_city_id'];
 		} else {
 			$this->data['error_shipping_city_id'] = '';
 		}
+		/* ----------------- JNE ----------------- */
 		
 		if (isset($this->error['shipping_method'])) {
 			$this->data['error_shipping_method'] = $this->error['shipping_method'];
@@ -996,6 +1006,7 @@ class ControllerSaleOrder extends Controller {
       		$this->data['payment_zone_id'] = '';
     	}	
 	    
+		/* ----------------- JNE ----------------- */
 		if (isset($this->request->post['payment_city_id'])) {
       		$this->data['payment_city_id'] = $this->request->post['payment_city_id'];
     	} elseif (!empty($order_info) || isset($order_info['payment_city_id'])) { 
@@ -1003,6 +1014,7 @@ class ControllerSaleOrder extends Controller {
 		} else {
       		$this->data['payment_city_id'] = '';
     	}
+		/* ----------------- /JNE ----------------- */
 						
     	if (isset($this->request->post['payment_method'])) {
       		$this->data['payment_method'] = $this->request->post['payment_method'];
@@ -1092,6 +1104,7 @@ class ControllerSaleOrder extends Controller {
       		$this->data['shipping_zone_id'] = '';
     	}	
 	    
+		/* ----------------- JNE ----------------- */
 		if (isset($this->request->post['shipping_city_id'])) {
       		$this->data['shipping_city_id'] = $this->request->post['shipping_city_id'];
     	} elseif (!empty($order_info) || isset($order_info['shipping_city_id'])) { 
@@ -1099,6 +1112,7 @@ class ControllerSaleOrder extends Controller {
 		} else {
       		$this->data['shipping_city_id'] = '';
     	}
+		/* ----------------- /JNE ----------------- */
 						
 		$this->load->model('localisation/country');
 		
@@ -1343,9 +1357,11 @@ class ControllerSaleOrder extends Controller {
 	
 	public function country() {
 
+		/* ----------------- JNE ----------------- */
 		if( $this->request->get['country_id'] == 100 ) {
 			return $this->forward('sale/order/jneTax');
 		}
+		/* ----------------- /JNE ----------------- */
 
 		$json = array();
 		
@@ -1664,7 +1680,9 @@ class ControllerSaleOrder extends Controller {
 			$this->data['payment_zone_code'] = $order_info['payment_zone_code'];
 			$this->data['payment_country'] = $order_info['payment_country'];	
 
-			$this->data['payment_jne'] 		= $order_info['payment_jne'];	
+			/* ----------------- JNE ----------------- */
+			$this->data['payment_jne'] 		= $order_info['payment_jne'];
+			/* ----------------- /JNE ----------------- */	
 
 			$this->data['shipping_firstname'] = $order_info['shipping_firstname'];
 			$this->data['shipping_lastname'] = $order_info['shipping_lastname'];
@@ -1673,7 +1691,9 @@ class ControllerSaleOrder extends Controller {
 			$this->data['shipping_address_2'] = $order_info['shipping_address_2'];
 			$this->data['shipping_city'] = $order_info['shipping_city'];
 
+			/* ----------------- JNE ----------------- */
 			$this->data['shipping_jne']    = $order_info['shipping_jne'];
+			/* ----------------- /JNE ----------------- */
 
 			$this->data['shipping_postcode'] = $order_info['shipping_postcode'];
 			$this->data['shipping_zone'] = $order_info['shipping_zone'];
@@ -2607,6 +2627,7 @@ class ControllerSaleOrder extends Controller {
 		$this->response->setOutput($this->render());
 	}
 
+	/* ----------------- JNE ----------------- */
 	public function jneTax(){
 
 		$data = array();
@@ -2648,5 +2669,6 @@ class ControllerSaleOrder extends Controller {
 		
 		$this->response->setOutput(json_encode($json));
 	}
+	/* ----------------- /JNE ----------------- */
 }
 ?>

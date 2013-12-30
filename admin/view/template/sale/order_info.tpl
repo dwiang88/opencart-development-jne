@@ -206,6 +206,7 @@
             <td><?php echo $text_city; ?></td>
             <td><?php echo $payment_city; ?></td>
           </tr>
+          <!-- JNE -->
           <?php if ($payment_jne) { ?>
             <tr>
               <td><?php echo $text_zone; ?></td>
@@ -215,6 +216,7 @@
               <td><?php echo $text_zone_code; ?></td>
               <td><?php echo $payment_jne['code']; ?></td>
             </tr>
+          <!-- /JNE -->
           <?php } else { ?>
             <?php if ($payment_postcode) { ?>
             <tr>
@@ -293,6 +295,7 @@
             <td><?php echo $shipping_postcode; ?></td>
           </tr>
           <?php } ?>
+          <!-- JNE -->
           <?php if ($shipping_jne) { ?>
             <tr>
               <td><?php echo $text_zone; ?></td>
@@ -302,6 +305,7 @@
               <td><?php echo $text_zone_code; ?></td>
               <td><?php echo $shipping_jne['code']; ?></td>
             </tr>
+          <!-- /JNE -->
           <?php } else { ?>
             <tr>
               <td><?php echo $text_zone; ?></td>

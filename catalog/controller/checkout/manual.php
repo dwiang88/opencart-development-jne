@@ -120,7 +120,12 @@ class ControllerCheckoutManual extends Controller {
 			
 			$this->tax->setPaymentAddress($this->request->post['payment_country_id'], $this->request->post['payment_zone_id']);				
 			$this->tax->setStoreAddress($this->config->get('config_country_id'), $this->config->get('config_zone_id'));	
-						
+					
+			// JNE shipping	
+			if( isset($this->request->post['shipping_city_id']) ){
+				$this->session->data['shipping_city_id'] = $this->request->post['shipping_city_id'];
+			}
+
 			// Products
 			$json['order_product'] = array();
 			
