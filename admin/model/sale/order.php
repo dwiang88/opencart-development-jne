@@ -831,5 +831,16 @@ class ModelSaleOrder extends Model {
 		
 		return $query->row['total'];
 	}	
+
+	public function getOrderWeight($order_id) {
+       	$query = $this->db->query("SELECT SUM(p.weight * op.quantity) AS weight FROM " . DB_PREFIX . "order_product op LEFT JOIN " . DB_PREFIX . "product p ON op.product_id = p.product_id WHERE op.order_id = '" . (int)$order_id . "'");
+                
+        if ($query->row['weight']) {
+        	$weight = $query->row['weight'];
+      	} else {
+         	$weight = 1;
+      	}
+      	return $weight;
+   	}
 }
 ?>

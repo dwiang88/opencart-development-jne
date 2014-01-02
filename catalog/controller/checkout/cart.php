@@ -3,11 +3,9 @@ class ControllerCheckoutCart extends Controller {
 	private $error = array();
 	
 	public function index() {
-		/*
 		echo '<pre>';
         echo print_r($_SESSION, 1);
         echo '</pre>';
-		*/
 		
 		$this->language->load('checkout/cart');
         
@@ -782,8 +780,13 @@ class ControllerCheckoutCart extends Controller {
 				'country'        => $country,	
 				'iso_code_2'     => $iso_code_2,
 				'iso_code_3'     => $iso_code_3,
-				'address_format' => $address_format
+				'address_format' => $address_format,
 			);
+
+			if( isset($this->session->data['shipping_city_id']) && $this->session->data['shipping_country_id'] == 100 ){
+				$this->load->model('shipping/jne');				
+				$address_data['cart_weights'] = $this->model_shipping_jne->jneConvertion( 'tolerance', null, $this->cart->getWeight());
+			}
 		
 			$quote_data = array();
 			

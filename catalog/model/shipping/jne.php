@@ -22,6 +22,7 @@ class ModelShippingJne extends Model {
 
 		// $default_currency = $this->config->get("config_currency");
 		$default_currency = $this->session->data['currency'];
+		$weight = (array_key_exists('cart_weights', $address)) ? $address['cart_weights'] : 10 ;
 
 		$JNE  = $this->populateJNE();
 	
@@ -33,15 +34,16 @@ class ModelShippingJne extends Model {
 				foreach( $taxes as $layanan => $tarif )
 				{				
 					$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
-					$text = $this->currency->format($cost, 'IDR');
+					$calc_cost = $weight * $cost ;
+					$text = $this->currency->format($calc_cost, 'IDR');
 					if( $default_currency != 'IDR' ){
-						$text .= '( ' .  $this->currency->format($cost, $default_currency) . ')';
+						$text .= '( ' .  $this->currency->format($calc_cost, $default_currency) . ')';
 					}
 					
 					$quote_data[$layanan] = array(
 		        		'code'         => 'jne.' . $layanan,
 		        		'title'        => $this->language->get('text_description') . ' ' . strtoupper($layanan),
-		        		'cost'         => $this->_floorDec($cost),
+		        		'cost'         => $this->_floorDec($calc_cost),
 		        		'tax_class_id' => null,
 						'text'         => $text
 		      		);
@@ -70,23 +72,23 @@ class ModelShippingJne extends Model {
 
 	function getAttributes( $product, $tax ){
 
-		$weight 	= $this->_jneConvertion( 'weight', 'convert', $product );
-        $dimension  = $this->_jneConvertion( 'dimension', 'convert', $product );
+		$weight 	= $this->jneConvertion( 'weight', 'convert', $product );
+        $dimension  = $this->jneConvertion( 'dimension', 'convert', $product );
 
-        $weight_jne_original   = $this->_jneConvertion( 'tolerance', null, $product );
+        $weight_jne_original   = $this->jneConvertion( 'tolerance', null, $product['weight'] );
         $weight_jne_volumetrik = $dimension ? ((($dimension['length'] * $dimension['width'] * $dimension['height']) / 6000) * $product['weight'] ): 0;
 
         $attributes = array(
         	'key'           => $product['key'],
             'name'          => $product['name'],
             'weight' 		=> array(
-            	'original'   => $this->_jneConvertion( 'weight', 'format', $product ),
+            	'original'   => $this->jneConvertion( 'weight', 'format', $product ),
             	'convertion' => $weight . 'kg',
             	'floor'  	 => $this->_floorDec($weight) . 'kg',
             	'tolerance'  => $weight_jne_original
             ),
             'dimension' 	=> array(
-            	'format'  => $this->_jneConvertion( 'dimension', 'format', $product ),
+            	'format'  => $this->jneConvertion( 'dimension', 'format', $product ),
             	'convert' => $dimension
             ),
             'jne'			=> array(
@@ -104,7 +106,7 @@ class ModelShippingJne extends Model {
     	return $attributes;
 	}
 
-	private function _jneConvertion( $type, $output, $product ){
+	function jneConvertion( $type, $output, $product ){
 		$_default_class_id = array(
 			'weight' 	=> '1', 	// kg
 			'length' 	=> '1', 	// cm
@@ -170,7 +172,7 @@ class ModelShippingJne extends Model {
         	$tolerance  = $this->config->get('jne_tolerance');
         	// $tolerance  = 0.3;
 
-			$weight = $this->_jneConvertion( 'weight', 'convert', $product );
+			$weight = $product;
 			if( $weight > 1 ){
 				$_weights   = $this->_floorDec($weight);
 				$intval     = intval($weight);

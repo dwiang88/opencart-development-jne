@@ -486,6 +486,14 @@
                 <td class="right"><?php echo $order_voucher['amount']; ?></td>
               </tr>
               <?php } ?>
+
+              <?php if($order_weights) : ?>
+              <tr id="total-row">
+                <td class="right" colspan="4">Weights:</td>
+                <td class="right"><?php echo $order_weights['format'] ?></td>
+              </tr>
+              <?php endif; ?>
+
               <?php foreach ($order_totals as $order_total) { ?>
               <tr id="total-row<?php echo $total_row; ?>">
                 <td class="right" colspan="4"><?php echo $order_total['title']; ?>:
@@ -1024,7 +1032,7 @@ $shippingCbCity.change(function() {
   $shippingInputCity.val(city);
 
   $.ajax({
-    url: 'index.php?route=sale/order/jneTax&token=<?php echo $token;?>&act=shipping&city_id=' + value,
+    url: 'index.php?route=sale/order/jneTax&token=<?php echo $token;?>&act=shipping&city_id=' + value +'&order_id=' + <?php echo $order_id ?>,
     dataType: 'json',
     beforeSend: function() {
       $('select[name=\'city_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');

@@ -13,9 +13,12 @@ class ModelShippingJne extends Model {
 		return $this->jne;
 	}
 
-	function getShipping( $city_id ){
+	function getShipping( $order_id, $city_id ){
 		$this->language->load('shipping/jne');
-		
+		$this->load->model('sale/order');
+
+		$weights = $this->model_sale_order->getOrderWeight($this->request->get['order_id']);
+
 		$data = array();
 		if( $taxes = $this->jne->getTax( $city_id ) ) 
 		{
@@ -23,15 +26,16 @@ class ModelShippingJne extends Model {
 			foreach( $taxes as $layanan => $tarif )
 			{				
 				$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
-				$text = $this->currency->format($cost, 'IDR');
+				$calculate_cost = $weights * $weights;
+				$text = $this->currency->format($calculate_cost, 'IDR');
 				if( $default_currency != 'IDR' ){
-					$text .= '( ' .  $this->currency->format($cost, $default_currency) . ')';
+					$text .= '( ' .  $this->currency->format($calculate_cost, $default_currency) . ')';
 				}
 				
 				$data[$layanan] = array(
 	        		'code'         => 'jne.' . $layanan,
 	        		'title'        => $this->language->get('text_description') . ' ' . strtoupper($layanan),
-	        		'cost'         => $this->_floorDec($cost),
+	        		'cost'         => $this->_floorDec($calculate_cost),
 	        		'tax_class_id' => null,
 					'text'         => $text
 	      		);

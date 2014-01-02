@@ -774,6 +774,10 @@ class ControllerSaleOrder extends Controller {
       		$order_info = $this->model_sale_order->getOrder($this->request->get['order_id']);
     	}
 
+    	echo '<pre>';
+    	echo print_r($_SESSION, 1);
+    	echo '</pre>';
+
 		$this->data['token'] = $this->session->data['token'];
 		
 		if (isset($this->request->get['order_id'])) {
@@ -1137,6 +1141,15 @@ class ControllerSaleOrder extends Controller {
 		} else {
 			$order_products = array();
 		}
+
+		$weights = 0;
+        if (isset($this->request->get['order_id'])) {
+     		$weights = $this->model_sale_order->getOrderWeight($this->request->get['order_id']);
+      	}
+      	$this->data['order_weights'] = array(
+      		'value' => $weights,
+      		'format' => $this->weight->format($weights, $this->config->get('config_weight_class_id'), $this->language->get('decimal_point'), $this->language->get('thousand_point')),
+      	);
 		
 		$this->load->model('catalog/product');
 		
@@ -1195,6 +1208,10 @@ class ControllerSaleOrder extends Controller {
 		} else {
       		$this->data['order_totals'] = array();
     	}	
+
+    	echo '<pre>';
+    	echo print_r($this->data['order_totals'], 1);
+    	echo '</pre>';
 		
 		$this->template = 'sale/order_form.tpl';
 		$this->children = array(
@@ -2647,10 +2664,11 @@ class ControllerSaleOrder extends Controller {
 				break;
 
 			case 'shipping':
-				$city_id = $this->request->get['city_id'];
-				if( !isset($city_id) ) return array();
+				$order_id = $this->request->get['order_id'];
+				$city_id  = $this->request->get['city_id'];
+				if( !isset($order_id) || !isset($city_id)  ) return array();
 
-				$methods = $this->model_shipping_jne->getShipping( $city_id );
+				$methods = $this->model_shipping_jne->getShipping( $order_id, $city_id );
 				$json = array('method' => $methods);
 				break;
 			
