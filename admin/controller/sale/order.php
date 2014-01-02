@@ -74,10 +74,6 @@ class ControllerSaleOrder extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('sale/order');
-
-		echo '<pre>';
-		echo print_r($_SESSION, 1);
-		echo '</pre>';
     	
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_sale_order->editOrder($this->request->get['order_id'], $this->request->post);
@@ -2648,6 +2644,14 @@ class ControllerSaleOrder extends Controller {
 					'postcode_required' => '0',
 					'data' => $data
 				);
+				break;
+
+			case 'shipping':
+				$city_id = $this->request->get['city_id'];
+				if( !isset($city_id) ) return array();
+
+				$methods = $this->model_shipping_jne->getShipping( $city_id );
+				$json = array('method' => $methods);
 				break;
 			
 			default:

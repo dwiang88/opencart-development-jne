@@ -41,7 +41,7 @@ class ModelShippingJne extends Model {
 					$quote_data[$layanan] = array(
 		        		'code'         => 'jne.' . $layanan,
 		        		'title'        => $this->language->get('text_description') . ' ' . strtoupper($layanan),
-		        		'cost'         => $cost,
+		        		'cost'         => $this->_floorDec($cost),
 		        		'tax_class_id' => null,
 						'text'         => $text
 		      		);

@@ -184,12 +184,10 @@
             </select></td>
         </tr>
         <!-- JNE -->
-        <?php if(isset($country_id) && $country_id == 100) : ?>
-        <tr>
+        <tr id="cb-cart-city" style="display:<?php echo ($country_id == 100) ? 'table-row' : 'none' ?>">
           <td><span class="required">*</span> <?php echo $entry_city; ?></td>
           <td><select name="city_id"><option><?php echo $text_select; ?></option></select></td>
         </tr>
-        <?php endif; ?>
         <!-- /JNE -->
         <tr>
           <td><span id="postcode-required" class="required">*</span> <?php echo $entry_postcode; ?></td>
@@ -331,8 +329,15 @@ $('#button-quote').live('click', function() {
 //--></script> 
 <script type="text/javascript"><!--
 $('select[name=\'country_id\']').bind('change', function() {
+  var value = $(this).val();
+  if( value == 100 ){
+   $('#cb-cart-city').show();
+  } else {
+   $('#cb-cart-city').hide();
+  }
+
   $.ajax({
-    url: 'index.php?route=checkout/cart/country&country_id=' + this.value,
+    url: 'index.php?route=checkout/cart/country&country_id=' + value,
     dataType: 'json',
     beforeSend: function() {
       $('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
@@ -367,6 +372,8 @@ $('select[name=\'country_id\']').bind('change', function() {
       }
       
       $('select[name=\'zone_id\']').html(html);
+      
+      if(value == 100) $('select[name=\'zone_id\']').trigger('change');
     },
     error: function(xhr, ajaxOptions, thrownError) {
       alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -431,7 +438,6 @@ $('select[name=\'zone_id\']').bind('change', function() {
 });
 
 $('select[name=\'country_id\']').trigger('change');
-$('select[name=\'zone_id\']').trigger('change');
 //--></script>
 <?php } ?>
 <?php echo $footer; ?>

@@ -172,7 +172,8 @@
                 <span class="error"><?php echo $error_payment_zone; ?></span>
                 <?php } ?></td>
             </tr>
-            <tr id="cb-payment-city">
+            <!-- JNE -->
+            <tr id="cb-payment-city" style="display:<?php echo (isset($country_id) && $country_id == 100) ? 'table-row' : 'none' ?>">
               <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
               <td><select name="payment_city_id">
                 </select>
@@ -180,6 +181,7 @@
                 <span class="error"><?php echo $error_payment_city_id; ?></span>
                 <?php } ?></td>
             </tr>
+            <!-- /JNE -->
           </table>
         </div>
         <div id="tab-shipping" class="vtabs-content">
@@ -257,7 +259,8 @@
                 <span class="error"><?php echo $error_shipping_zone; ?></span>
                 <?php } ?></td>
             </tr>
-            <tr id="cb-shipping-city">
+            <!-- JNE -->
+            <tr id="cb-shipping-city" style="display:<?php echo (isset($country_id) && $country_id == 100) ? 'table-row' : 'none' ?>">
               <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
               <td><select name="shipping_city_id">
                 </select>
@@ -265,6 +268,7 @@
                 <span class="error"><?php echo $error_shipping_city_id; ?></span>
                 <?php } ?></td>
             </tr>
+            <!-- /JNE -->
           </table>
         </div>
         <div id="tab-product" class="vtabs-content">
@@ -944,6 +948,8 @@ var $shippingInputCity = $('input[name=\'shipping_city\']');
 var $shippingCbZone    = $('select[name=\'shipping_zone_id\']');
 var $shippingCbCity    = $('select[name=\'shipping_city_id\']');
 
+var $shippingCbMethod = $('select[name="shipping"]');
+
 // JNE combobox zone
 $shippingCbZone.bind('change', function() {
   var country_id = $('select[name=\'shipping_country_id\']').val();
@@ -1009,12 +1015,45 @@ $shippingCbZone.bind('change', function() {
 // JNE combobox city
 $shippingCbCity.change(function() {
   var selected = $("option:selected", this);
+  var value = selected.val();
   var city = selected.parent()[0].label + ', ' + selected.text();
-  if( !selected.val() ){
+  if( $shippingInputCity.val() != 100 && !value ){
     $shippingInputCity.val('');
     return;
   }
   $shippingInputCity.val(city);
+
+  $.ajax({
+    url: 'index.php?route=sale/order/jneTax&token=<?php echo $token;?>&act=shipping&city_id=' + value,
+    dataType: 'json',
+    beforeSend: function() {
+      $('select[name=\'city_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+    },
+    complete: function() {
+      $('.wait').remove();
+    },      
+    success: function(json) {
+      
+      if(json['method']){
+
+        $shippingCbMethod.html('<option value=""><?php echo $text_select; ?></option>');
+
+        $.each(json['method'], function( k,method ) {
+          var option = $("<option/>", { value: method.code, text : method.title });
+
+          if( method.code == '<?php echo $shipping_code; ?>' ){
+            option.prop('selected', true);
+          }
+
+          option.appendTo($shippingCbMethod);
+        });
+      }
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
 });
 
 /* ----------------- /JNE ----------------- */
@@ -1706,7 +1745,7 @@ $('#button-product, #button-voucher, #button-update').live('click', function() {
 				}
 				
 				var total_row = 0;
-				
+
 				for (i in json['order_total']) {
 					total = json['order_total'][i];
 					
