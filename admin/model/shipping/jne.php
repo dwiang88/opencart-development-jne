@@ -26,7 +26,7 @@ class ModelShippingJne extends Model {
 			foreach( $taxes as $layanan => $tarif )
 			{				
 				$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
-				$calculate_cost = $weights * $weights;
+				$calculate_cost = $weights * $cost;
 				$text = $this->currency->format($calculate_cost, 'IDR');
 				if( $default_currency != 'IDR' ){
 					$text .= '( ' .  $this->currency->format($calculate_cost, $default_currency) . ')';

@@ -348,6 +348,13 @@ class ControllerCheckoutManual extends Controller {
 						'iso_code_3'     => $iso_code_3,
 						'address_format' => $address_format
 					);
+
+					/* ----------- JNE ----------- */
+					if( isset($this->session->data['shipping_city_id']) ){
+						$this->load->model('shipping/jne');				
+						$address_data['cart_weights'] = $this->model_shipping_jne->jneConvertion('tolerance', null, $this->cart->getWeight());
+					}
+					/* ----------- /JNE ----------- */
 					
 					$results = $this->model_setting_extension->getExtensions('shipping');
 					

@@ -22,7 +22,7 @@ class ModelShippingJne extends Model {
 
 		// $default_currency = $this->config->get("config_currency");
 		$default_currency = $this->session->data['currency'];
-		$weight = (array_key_exists('cart_weights', $address)) ? $address['cart_weights'] : 10 ;
+		$weights = (array_key_exists('cart_weights', $address)) ? $address['cart_weights'] : 1 ;
 
 		$JNE  = $this->populateJNE();
 	
@@ -34,7 +34,7 @@ class ModelShippingJne extends Model {
 				foreach( $taxes as $layanan => $tarif )
 				{				
 					$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
-					$calc_cost = $weight * $cost ;
+					$calc_cost = $weights * $cost ;
 					$text = $this->currency->format($calc_cost, 'IDR');
 					if( $default_currency != 'IDR' ){
 						$text .= '( ' .  $this->currency->format($calc_cost, $default_currency) . ')';

@@ -783,10 +783,12 @@ class ControllerCheckoutCart extends Controller {
 				'address_format' => $address_format,
 			);
 
+			/* ----------- JNE ----------- */
 			if( isset($this->session->data['shipping_city_id']) && $this->session->data['shipping_country_id'] == 100 ){
 				$this->load->model('shipping/jne');				
 				$address_data['cart_weights'] = $this->model_shipping_jne->jneConvertion( 'tolerance', null, $this->cart->getWeight());
 			}
+			/* ----------- /JNE ----------- */
 		
 			$quote_data = array();
 			
