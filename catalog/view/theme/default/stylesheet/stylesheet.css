@@ -1641,3 +1641,12 @@ ul.box-filter > li ul {
 .banner div img {
 	margin-bottom: 20px;
 }
+
+#header #contact-messenger {
+	position: absolute;
+	left: 74px;
+	bottom: 0px;
+	font-size: 10px;
+	padding-right: 10px;
+}
+#header #contact-messenger img { vertical-align:middle; }

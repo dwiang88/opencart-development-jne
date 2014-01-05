@@ -3,9 +3,6 @@ class ControllerCheckoutCart extends Controller {
 	private $error = array();
 	
 	public function index() {
-		echo '<pre>';
-        echo print_r($_SESSION, 1);
-        echo '</pre>';
 		
 		$this->language->load('checkout/cart');
         

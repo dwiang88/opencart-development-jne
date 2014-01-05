@@ -68,9 +68,18 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
     <?php echo $text_logged; ?>
     <?php } ?>
   </div>
-  <div class="links"><a href="<?php echo $home; ?>"><?php echo $text_home; ?></a><a href="<?php echo $wishlist; ?>" id="wishlist-total"><?php echo $text_wishlist; ?></a><a href="<?php echo $account; ?>"><?php echo $text_account; ?></a><a href="<?php echo $shopping_cart; ?>"><?php echo $text_shopping_cart; ?></a><a href="<?php echo $checkout; ?>"><?php echo $text_checkout; ?></a></div>
-</div>
-<?php if ($categories) { ?>
+  <div id="contact-messenger">
+    <img src="image/icon-bbm.png" title="Pin BB" />26B64ADE
+    <img src="image/icon-whatsapp.png" title="Whatsapp" />087738782493
+  </div>
+  <div class="links">
+    <a href="<?php echo $home; ?>"><?php echo $text_home; ?></a>
+    <a href="<?php echo $wishlist; ?>" id="wishlist-total"><?php echo $text_wishlist; ?></a>
+    <a href="<?php echo $account; ?>"><?php echo $text_account; ?></a>
+    <a href="<?php echo $shopping_cart; ?>"><?php echo $text_shopping_cart; ?></a>
+    <a href="<?php echo $checkout; ?>"><?php echo $text_checkout; ?></a>
+  </div>
+</div><?php if ($categories) { ?>
 <div id="menu">
   <ul>
     <?php foreach ($categories as $category) { ?>

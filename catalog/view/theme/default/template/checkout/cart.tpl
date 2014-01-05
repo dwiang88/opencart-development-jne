@@ -186,7 +186,7 @@
         <!-- JNE -->
         <tr id="cb-cart-city" style="display:<?php echo ($country_id == 100) ? 'table-row' : 'none' ?>">
           <td><span class="required">*</span> <?php echo $entry_city; ?></td>
-          <td><select name="city_id"><option><?php echo $text_select; ?></option></select></td>
+          <td><select name="city_id"><option value=""><?php echo $text_select; ?></option></select></td>
         </tr>
         <!-- /JNE -->
         <tr>
@@ -268,6 +268,9 @@ $('#button-quote').live('click', function() {
       }
       
       if (json['shipping_method']) {
+        html += '<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/tiptip/tipTip.css.css" />';
+        html += '<script type="text/javascript" src="catalog/view/javascript/jquery/tiptip/jquery.tipTip.min.js.js"></script>';
+        html += '<script type="text/javascript">$(function(){ $(".someClass").tipTip({maxWidth: "auto", defaultPosition: "top"}); });</script>';
         html  = '<h2><?php echo $text_shipping_method; ?></h2>';
         html += '<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data">';
         html += '  <table class="radio">';
@@ -288,7 +291,11 @@ $('#button-quote').live('click', function() {
               }
                 
               html += '  <td><label for="' + json['shipping_method'][i]['quote'][j]['code'] + '">' + json['shipping_method'][i]['quote'][j]['title'] + '</label></td>';
-              html += '  <td style="text-align: right;"><label for="' + json['shipping_method'][i]['quote'][j]['code'] + '">' + json['shipping_method'][i]['quote'][j]['text'] + '</label></td>';
+              if( json['shipping_method'][i]['quote'][j]['description'] ){
+                html += '  <td style="text-align: right;"><label for="' + json['shipping_method'][i]['quote'][j]['code'] + '" class="someClass" title="' + json['shipping_method'][i]['quote'][j]['description'] + '">' + json['shipping_method'][i]['quote'][j]['text'] + '</label></td>';
+              } else {
+                html += '  <td style="text-align: right;"><label for="' + json['shipping_method'][i]['quote'][j]['code'] + '" class="someClass" title="' + json['shipping_method'][i]['quote'][j]['code'] + '">' + json['shipping_method'][i]['quote'][j]['text'] + '</label></td>';
+              }
               html += '</tr>';
             }   
           } else {

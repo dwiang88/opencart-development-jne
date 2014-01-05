@@ -74,5 +74,6 @@
 }
 .jcarousel-skin-opencart .jcarousel-prev-disabled-horizontal, .jcarousel-skin-opencart .jcarousel-prev-disabled-horizontal:hover, .jcarousel-skin-opencart .jcarousel-prev-disabled-horizontal:focus, .jcarousel-skin-opencart .jcarousel-prev-disabled-horizontal:active {
 	cursor: default;
-	background: none;
+	/*background: none;*/
+	opacity: .3;
 }

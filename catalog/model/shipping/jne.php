@@ -34,7 +34,9 @@ class ModelShippingJne extends Model {
 				foreach( $taxes as $layanan => $tarif )
 				{				
 					$cost = ( $default_currency == 'IDR' ) ? $this->currency->convert($tarif['harga'], 'IDR', 'USD') : $this->currency->convert($tarif['harga'], 'IDR', $default_currency);
+					$cost_format = $this->currency->format($cost, 'IDR');
 					$calc_cost = $weights * $cost ;
+
 					$text = $this->currency->format($calc_cost, 'IDR');
 					if( $default_currency != 'IDR' ){
 						$text .= '( ' .  $this->currency->format($calc_cost, $default_currency) . ')';
@@ -45,7 +47,8 @@ class ModelShippingJne extends Model {
 		        		'title'        => $this->language->get('text_description') . ' ' . strtoupper($layanan),
 		        		'cost'         => $this->_floorDec($calc_cost),
 		        		'tax_class_id' => null,
-						'text'         => $text
+						'text'         => $text,
+						'description'  => "($weights kg x $cost_format)"
 		      		);
 				}
 			}
