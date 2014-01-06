@@ -2659,7 +2659,8 @@ class ControllerSaleOrder extends Controller {
 				$data = $JNE->getCitiesByProvinceOnGroup( $provinsi );
 				$json = array(
 					'postcode_required' => '0',
-					'data' => $data
+					'data' => $data,
+					'all' => $JNE->getData()
 				);
 				break;
 
@@ -2671,7 +2672,7 @@ class ControllerSaleOrder extends Controller {
 				$methods = $this->model_shipping_jne->getShipping( $order_id, $city_id );
 				$json = array('method' => $methods);
 				break;
-			
+
 			default:
 				$zone = $JNE::OrderProvinsi( $zone );
 

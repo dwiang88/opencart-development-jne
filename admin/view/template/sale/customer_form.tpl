@@ -188,12 +188,23 @@
               </tr>
               <tr>
                 <td><span class="required">*</span> <?php echo $entry_zone; ?></td>
-                <td><select name="address[<?php echo $address_row; ?>][zone_id]">
+                <td><select name="address[<?php echo $address_row; ?>][zone_id]" onchange="cityId(this, '<?php echo $address_row; ?>', '<?php echo $address['zone_id']; ?>', '<?php echo $address['city_id'] ? $address['city_id'] : 0 ; ?>');">
                   </select>
                   <?php if (isset($error_address_zone[$address_row])) { ?>
                   <span class="error"><?php echo $error_address_zone[$address_row]; ?></span>
                   <?php } ?></td>
               </tr>
+
+              <tr id="cb-customer-address-city-<?php echo $address_row; ?>"
+                  style="display:<?php echo ($address['country_id'] == 100) ? 'table-row' : 'none' ; ?>">
+                <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
+                <td><select name="address[<?php echo $address_row; ?>][city_id]" onchange="setCity(this, '<?php echo $address_row; ?>');">
+                  </select>
+                  <?php if (isset($error_address_city_id[$address_row])) { ?>
+                  <span class="error"><?php echo $error_address_city_id[$address_row]; ?></span>
+                  <?php } ?></td>
+              </tr>
+
               <tr>
                 <td><?php echo $entry_default; ?></td>
                 <td><?php if (($address['address_id'] == $address_id) || !$addresses) { ?>
@@ -320,6 +331,12 @@ $('select[name=\'customer_group_id\']').trigger('change');
 <script type="text/javascript"><!--
 function country(element, index, zone_id) {
   if (element.value != '') {
+
+    if( element.value == 100 )
+      $('#cb-customer-address-city').show();
+    else
+      $('#cb-customer-address-city').hide();
+
 		$.ajax({
 			url: 'index.php?route=sale/customer/country&token=<?php echo $token; ?>&country_id=' + element.value,
 			dataType: 'json',
@@ -353,6 +370,8 @@ function country(element, index, zone_id) {
 				}
 				
 				$('select[name=\'address[' + index + '][zone_id]\']').html(html);
+
+        if( element.value == 100 ) $('select[name=\'address[' + index + '][zone_id]\']').trigger('change');
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -360,6 +379,76 @@ function country(element, index, zone_id) {
 		});
 	}
 }
+
+/* ----------------- JNE ----------------- */
+function cityId(element, index, zone_id, city_id){
+  // JNE cb zone
+    var country_id = $('select[name=\'address[' + index + '][country_id]\']').val();
+    var textSelected = $(element).find('option:selected').text();
+    var zone_id = element.value ? textSelected : zone_id;
+
+    console.log('zone_id:' + index,  zone_id, city_id);
+
+    // indonesia only (country id = 100)
+    if( !zone_id || !country_id || country_id != 100 ) return false;
+
+    $.ajax({
+      url: 'index.php?route=sale/order/jneTax&token=<?php echo $token; ?>&act=city&province=' + zone_id,
+      dataType: 'json',
+      beforeSend: function() {
+        $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+      },
+      complete: function() {
+        $('.wait').remove();
+      },      
+      success: function(json) {
+        if (json['postcode_required'] == '1') {
+          $('#postcode-required').show();
+        } else {
+          $('#postcode-required').hide();
+        }
+        
+        var $cb = $('select[name=\'address[' + index + '][city_id]\']');
+        $cb.html('<option value=""><?php echo $text_select; ?></option>');
+
+        $.each(json['data'], function(key, cat) {
+          // create group
+          var group = $('<optgroup>', {
+            label: key
+          });
+          // option combobox kota
+          $.each(cat, function(k, v) {
+            var option = $("<option/>", { value: k, text : v });
+
+            if( k == city_id ){
+              option.prop('selected', true);
+            }
+
+            option.appendTo(group);
+          });
+          // add to group
+          group.appendTo($cb);
+        });
+
+        $('select[name=\'address[' + index + '][city_id]\']').trigger('change');
+
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+}
+
+function setCity(element, index){
+  var selected = $("option:selected", element);
+  var city = selected.parent()[0].label + ', ' + selected.text();
+  if( !selected.val() ){
+    $('input[name=\'address[' + index + '][city]\']').val('')
+    return;
+  }
+  $('input[name=\'address[' + index + '][city]\']').val(city)
+}
+/* ----------------- /JNE ----------------- */
 
 $('select[name$=\'[country_id]\']').trigger('change');
 //--></script> 
@@ -417,8 +506,14 @@ function addAddress() {
     html += '    </tr>';
     html += '    <tr>';
     html += '      <td><span class="required">*</span> <?php echo $entry_zone; ?></td>';
-    html += '      <td><select name="address[' + address_row + '][zone_id]"><option value="false"><?php echo $this->language->get('text_none'); ?></option></select></td>';
+    html += '      <td><select name="address[' + address_row + '][zone_id]" onchange="cityId(this, \'' + address_row + '\', \'0\', \'0\');"><option value="false"><?php echo $this->language->get('text_none'); ?></option></select></td>';
     html += '    </tr>';
+
+    html += '    <tr id="cb-customer-address-city-' + address_row + '">';
+    html += '      <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>';
+    html += '      <td><select name="address[' + address_row + '][city_id]" onchange="setCity(this, \'' + address_row + '\');"><option value="false"><?php echo $this->language->get('text_none'); ?></option></select></td>';
+    html += '    </tr>';
+
 	html += '    <tr>';
     html += '      <td><?php echo $entry_default; ?></td>';
     html += '      <td><input type="radio" name="address[' + address_row + '][default]" value="1" /></td>';

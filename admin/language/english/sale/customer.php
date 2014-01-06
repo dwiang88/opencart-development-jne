@@ -47,6 +47,7 @@ $_['entry_city']            = 'City:';
 $_['entry_postcode']        = 'Postcode:';
 $_['entry_country']         = 'Country:';
 $_['entry_zone']            = 'Region / State:';
+$_['entry_city_id']         = 'City / Regency:';
 $_['entry_default']         = 'Default Address:';
 $_['entry_comment']         = 'Comment:';
 $_['entry_description']     = 'Description:';
@@ -71,4 +72,5 @@ $_['error_city']            = 'City must be between 2 and 128 characters!';
 $_['error_postcode']        = 'Postcode must be between 2 and 10 characters for this country!';
 $_['error_country']         = 'Please select a country!';
 $_['error_zone']            = 'Please select a region / state!';
+$_['error_city_id']         = 'Please select a city / regency!';
 ?>

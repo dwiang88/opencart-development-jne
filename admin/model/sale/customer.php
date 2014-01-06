@@ -228,6 +228,7 @@ class ModelSaleCustomer extends Model {
 				'address_2'      => $address_query->row['address_2'],
 				'postcode'       => $address_query->row['postcode'],
 				'city'           => $address_query->row['city'],
+				'city_id'        => (isset($address_query->row['city_id'])) ? $address_query->row['city_id'] : null,
 				'zone_id'        => $address_query->row['zone_id'],
 				'zone'           => $zone,
 				'zone_code'      => $zone_code,
@@ -252,6 +253,10 @@ class ModelSaleCustomer extends Model {
 				$address_data[$result['address_id']] = $address_info;
 			}
 		}		
+
+		echo '<pre>';
+		echo print_r($address_data, 1);
+		echo '</pre>';
 		
 		return $address_data;
 	}	

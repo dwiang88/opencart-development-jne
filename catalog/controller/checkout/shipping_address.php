@@ -17,6 +17,8 @@ class ControllerCheckoutShippingAddress extends Controller {
 		$this->data['entry_city'] = $this->language->get('entry_city');
 		$this->data['entry_country'] = $this->language->get('entry_country');
 		$this->data['entry_zone'] = $this->language->get('entry_zone');
+
+		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
 	
 		$this->data['button_continue'] = $this->language->get('button_continue');
 			
@@ -46,6 +48,12 @@ class ControllerCheckoutShippingAddress extends Controller {
 			$this->data['zone_id'] = $this->session->data['shipping_zone_id'];		
 		} else {
 			$this->data['zone_id'] = '';
+		}
+				
+		if (isset($this->session->data['payment_city_id'])) {
+			$this->data['city_id'] = $this->session->data['payment_city_id'];		
+		} else {
+			$this->data['city_id'] = '';
 		}
 						
 		$this->load->model('localisation/country');

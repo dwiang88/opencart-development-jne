@@ -634,6 +634,8 @@ class ControllerSaleCustomer extends Controller {
 		$this->data['entry_description'] = $this->language->get('entry_description');
 		$this->data['entry_amount'] = $this->language->get('entry_amount');
 		$this->data['entry_points'] = $this->language->get('entry_points');
+
+		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
  
 		$this->data['button_save'] = $this->language->get('button_save');
     	$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -746,6 +748,12 @@ class ControllerSaleCustomer extends Controller {
 			$this->data['error_address_zone'] = $this->error['address_zone'];
 		} else {
 			$this->data['error_address_zone'] = '';
+		}
+		
+		if (isset($this->error['address_city_id'])) {
+			$this->data['error_address_city_id'] = $this->error['address_city_id'];
+		} else {
+			$this->data['error_address_city_id'] = '';
 		}
 		
 		$url = '';
@@ -1023,6 +1031,10 @@ class ControllerSaleCustomer extends Controller {
 				
 				if (!isset($value['zone_id']) || $value['zone_id'] == '') {
 					$this->error['address_zone'][$key] = $this->language->get('error_zone');
+				}	
+				
+				if ($value['country_id'] == 100 && $value['city_id'] == '') {
+					$this->error['address_city_id'][$key] = $this->language->get('error_city_id');
 				}	
 			}
 		}
@@ -1379,6 +1391,13 @@ class ControllerSaleCustomer extends Controller {
 	}		
 		
 	public function country() {
+
+		/* ----------------- JNE ----------------- */
+		if( $this->request->get['country_id'] == 100 ) {
+			return $this->forward('sale/order/jneTax');
+		}
+		/* ----------------- /JNE ----------------- */
+		
 		$json = array();
 		
 		$this->load->model('localisation/country');

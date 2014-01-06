@@ -19,6 +19,8 @@ class ControllerCheckoutPaymentAddress extends Controller {
 		$this->data['entry_city'] = $this->language->get('entry_city');
 		$this->data['entry_country'] = $this->language->get('entry_country');
 		$this->data['entry_zone'] = $this->language->get('entry_zone');
+
+		$this->data['entry_city_id'] = $this->language->get('entry_city_id');
 	
 		$this->data['button_continue'] = $this->language->get('button_continue');
 
@@ -38,6 +40,11 @@ class ControllerCheckoutPaymentAddress extends Controller {
 		
 		$customer_group_info = $this->model_account_customer_group->getCustomerGroup($this->customer->getCustomerGroupId());
 		
+		echo '<pre>';
+		echo print_r($customer_group_info, 1);
+		echo print_r($this->data['addresses'], 1);
+		echo '</pre>';
+
 		if ($customer_group_info) {
 			$this->data['company_id_display'] = $customer_group_info['company_id_display'];
 		} else {
@@ -72,6 +79,12 @@ class ControllerCheckoutPaymentAddress extends Controller {
 			$this->data['zone_id'] = $this->session->data['payment_zone_id'];		
 		} else {
 			$this->data['zone_id'] = '';
+		}
+				
+		if (isset($this->session->data['payment_city_id'])) {
+			$this->data['city_id'] = $this->session->data['payment_city_id'];		
+		} else {
+			$this->data['city_id'] = '';
 		}
 		
 		$this->load->model('localisation/country');

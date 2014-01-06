@@ -41,7 +41,7 @@ class ModelAccountAddress extends Model {
 				$iso_code_3 = '';	
 				$address_format = '';
 			}
-			
+
 			$zone_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone` WHERE zone_id = '" . (int)$address_query->row['zone_id'] . "'");
 			
 			if ($zone_query->num_rows) {
@@ -50,7 +50,7 @@ class ModelAccountAddress extends Model {
 			} else {
 				$zone = '';
 				$zone_code = '';
-			}		
+			}
 			
 			$address_data = array(
 				'firstname'      => $address_query->row['firstname'],
@@ -102,6 +102,22 @@ class ModelAccountAddress extends Model {
 			
 			if ($zone_query->num_rows) {
 				$zone = $zone_query->row['name'];
+				if( $result['country_id'] == 100 ) {
+					$this->load->model('localisation/zone');
+					$this->load->model('shipping/jne');
+
+					$zones = $this->model_localisation_zone->getZonesByCountryId(100);
+					$JNE  = $this->model_shipping_jne->populateJNE();
+
+					$zones = $JNE::OrderProvinsi( $zones );
+					if( $jne_zone_allowed = $this->config->get('jne_zone_allowed') ){
+						$jne_zone_allowed = unserialize($this->config->get('jne_zone_allowed'));
+						$zones = array_intersect_key($zones, array_flip($jne_zone_allowed));
+					}
+
+					$data = $JNE->getData( true );
+					$zone = $zones[$result['zone_id']]['name'];
+				} 
 				$zone_code = $zone_query->row['code'];
 			} else {
 				$zone = '';
@@ -119,6 +135,7 @@ class ModelAccountAddress extends Model {
 				'address_2'      => $result['address_2'],
 				'postcode'       => $result['postcode'],
 				'city'           => $result['city'],
+				'city_id'        => (isset($result['city_id'])) ? $result['city_id'] : null,
 				'zone_id'        => $result['zone_id'],
 				'zone'           => $zone,
 				'zone_code'      => $zone_code,

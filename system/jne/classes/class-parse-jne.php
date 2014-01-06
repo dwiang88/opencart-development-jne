@@ -250,7 +250,7 @@ class Parse_JNE
 		return $data;
 	}
 
-	public function getData( $isSorted = false)
+	public function getData( $isSorted = false )
 	{
 		return $isSorted ? $this->_sortAll() : $this->_data ;
 	}
