@@ -5,6 +5,12 @@ define('HTTP_SERVER', 'http://localhost/opencart-development-jne/');
 // HTTPS
 define('HTTPS_SERVER', 'http://localhost/opencart-development-jne/');
 
+// HTTP IMAGE
+define('HTTP_IMAGE', HTTP_SERVER . 'image/');
+
+// HTTPS IMAGE
+define('HTTPS_IMAGE', HTTP_SERVER . 'image/');
+
 // DIR
 define('ROOT', dirname(__FILE__));
 define('DIR_APPLICATION', ROOT . '/catalog/');

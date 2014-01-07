@@ -333,9 +333,9 @@ function country(element, index, zone_id) {
   if (element.value != '') {
 
     if( element.value == 100 )
-      $('#cb-customer-address-city').show();
+      $('#cb-customer-address-city-'+index).show();
     else
-      $('#cb-customer-address-city').hide();
+      $('#cb-customer-address-city-'+index).hide();
 
 		$.ajax({
 			url: 'index.php?route=sale/customer/country&token=<?php echo $token; ?>&country_id=' + element.value,
@@ -509,7 +509,7 @@ function addAddress() {
     html += '      <td><select name="address[' + address_row + '][zone_id]" onchange="cityId(this, \'' + address_row + '\', \'0\', \'0\');"><option value="false"><?php echo $this->language->get('text_none'); ?></option></select></td>';
     html += '    </tr>';
 
-    html += '    <tr id="cb-customer-address-city-' + address_row + '">';
+    html += '    <tr id="cb-customer-address-city-' + address_row + '" style="display:none;">';
     html += '      <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>';
     html += '      <td><select name="address[' + address_row + '][city_id]" onchange="setCity(this, \'' + address_row + '\');"><option value="false"><?php echo $this->language->get('text_none'); ?></option></select></td>';
     html += '    </tr>';

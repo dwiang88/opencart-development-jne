@@ -39,11 +39,6 @@ class ControllerCheckoutPaymentAddress extends Controller {
 		$this->load->model('account/customer_group');
 		
 		$customer_group_info = $this->model_account_customer_group->getCustomerGroup($this->customer->getCustomerGroupId());
-		
-		echo '<pre>';
-		echo print_r($customer_group_info, 1);
-		echo print_r($this->data['addresses'], 1);
-		echo '</pre>';
 
 		if ($customer_group_info) {
 			$this->data['company_id_display'] = $customer_group_info['company_id_display'];

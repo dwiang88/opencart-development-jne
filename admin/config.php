@@ -7,6 +7,11 @@ define('HTTP_CATALOG', 'http://localhost/opencart-development-jne/');
 define('HTTPS_SERVER', 'http://localhost/opencart-development-jne/admin/');
 define('HTTPS_CATALOG', 'http://localhost/opencart-development-jne/');
 
+// HTTP IMAGE
+define('HTTP_IMAGE', HTTP_SERVER . 'image/');
+// HTTPS IMAGE
+define('HTTPS_IMAGE', HTTP_SERVER . 'image/');
+
 // DIR
 define('ROOT', dirname(dirname(__FILE__)));
 define('DIR_APPLICATION', ROOT . '/admin/');

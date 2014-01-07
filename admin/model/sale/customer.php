@@ -252,11 +252,7 @@ class ModelSaleCustomer extends Model {
 			if ($address_info) {
 				$address_data[$result['address_id']] = $address_info;
 			}
-		}		
-
-		echo '<pre>';
-		echo print_r($address_data, 1);
-		echo '</pre>';
+		}	
 		
 		return $address_data;
 	}	
