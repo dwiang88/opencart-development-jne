@@ -335,6 +335,9 @@ $('#button-quote').live('click', function() {
 });
 //--></script> 
 <script type="text/javascript"><!--
+var zone_id = '<?php echo $zone_id; ?>';
+var city_id = '<?php echo $city_id; ?>';
+
 $('select[name=\'country_id\']').bind('change', function() {
   var value = $(this).val();
   if( value == 100 ){
@@ -358,8 +361,6 @@ $('select[name=\'country_id\']').bind('change', function() {
       } else {
         $('#postcode-required').hide();
       }
-      
-      console.log(json);
 
       html = '<option value=""><?php echo $text_select; ?></option>';
       
@@ -368,8 +369,10 @@ $('select[name=\'country_id\']').bind('change', function() {
         for (i = 0; i < json.zone.length; i++) {
             html += '<option value="' + json.zone[i]['zone_id'] + '"';
             
-            if (json.zone[i]['zone_id'] == '<?php echo $zone_id; ?>') {
-                html += ' selected="selected"';
+            if( zone_id ){
+              if (json.zone[i]['zone_id'] == zone_id ) {
+                  html += ' selected="selected"';
+              }
             }
   
             html += '>' + json.zone[i]['name'] + '</option>';
@@ -393,8 +396,9 @@ $('select[name=\'zone_id\']').bind('change', function() {
   var country_id = $('select[name=\'country_id\']').val();
   var textSelected = $(this).find('option:selected').text();
   var zone_id = this.value ? textSelected : '<?php echo $zone_id; ?>';
-
+ 
   console.log('zone_id',  zone_id);
+  console.log('city_id',  city_id);
 
   // indonesia only (country id = 100)
   if( !zone_id || !country_id || country_id != 100 ) return false;
@@ -427,7 +431,7 @@ $('select[name=\'zone_id\']').bind('change', function() {
         $.each(cat, function(k, v) {
           var option = $("<option/>", { value: k, text : v });
 
-          if( k == '<?php echo $city_id; ?>' ){
+          if( k == city_id ){
             option.prop('selected', true);
           }
 

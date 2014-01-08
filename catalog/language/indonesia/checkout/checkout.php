@@ -55,7 +55,8 @@ $_['entry_address_2']                = 'Alamat 2:';
 $_['entry_postcode']                 = 'Kode Pos:';
 $_['entry_city']                     = 'Kota:';
 $_['entry_country']                  = 'Negara:';
-$_['entry_zone']                     = 'Propinsi:';
+$_['entry_zone']                     = 'Provinsi:';
+$_['entry_city_id']                  = 'Kota/Kabupaten:';
 $_['entry_newsletter']               = 'Saya ingin mendaftar %s newsletter.';
 $_['entry_shipping'] 	             = 'Alamat pengiriman dan penagihan saya sama.';
 
@@ -78,6 +79,7 @@ $_['error_city']                     = 'Kota harus terdiri dari 2 sampai 128 kar
 $_['error_postcode']                 = 'Kode Pos harus terdiri dari 2 sampai 10 karakter!';
 $_['error_country']                  = 'Silahkan pilih negara!';
 $_['error_zone']                     = 'Silahkan pilih propinsi!';
+$_['error_city_id']                  = 'Silahkan pilih kota!';
 $_['error_agree']                    = 'Perhatian: Anda harus menyetujui %s!';
 $_['error_address']                  = 'Perhatian: Anda harus memilih alamat!';
 $_['error_shipping']                 = 'Perhatian: Metode pengiriman dibutuhkan!';

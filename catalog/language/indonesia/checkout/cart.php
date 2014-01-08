@@ -35,7 +35,8 @@ $_['entry_coupon']           = 'Masukkan kupon disini:';
 $_['entry_voucher']          = 'Masukkan kode voucher hadiah disini:';
 $_['entry_reward']           = 'Poin yang digunakan (Maks %s):';
 $_['entry_country']          = 'Negara:';
-$_['entry_zone']             = 'Kota:';
+$_['entry_zone']             = 'Provinsi:';
+$_['entry_city']             = 'Kota:';
 $_['entry_postcode']         = 'Kode Pos:';
 
 // Error
@@ -50,7 +51,8 @@ $_['error_points']           = 'Perhatian: Anda tidak mempunyai %s poin hadiah!'
 $_['error_maximum']          = 'Perhatian: Maksimal jumlah poin yang bisa digunakan adalah %s!';
 $_['error_postcode']         = 'Kode Pos harus berjumlah 2 sampai 10 karakter!';
 $_['error_country']          = 'Silahkan pilih negara!';
-$_['error_zone']             = 'Silahkan pilih kota!';
+$_['error_zone']             = 'Silahkan pilih provinsi!';
+$_['error_city']             = 'Silahkan pilih kota!';
 $_['error_shipping']         = 'Perhatian: Metode pengiriman diperlukan!';
 $_['error_no_shipping']      = 'Perhatian: Tidak ada pilihan pengiriman yang tersedia. Silahkan <a href="%s">hubungi kami</a> untuk bantuan!';
 ?>

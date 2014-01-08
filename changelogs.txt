@@ -26,6 +26,8 @@ admin
       shipping
         jne.tpl
         
+  config.php
+  
  catalog
     controller/
       checkout/
