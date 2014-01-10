@@ -57,7 +57,8 @@
           <td><?php echo $entry_address_2; ?></td>
           <td><input type="text" name="address_2" value="<?php echo $address_2; ?>" /></td>
         </tr>
-        <tr>
+        <tr id="input-account-city"
+            style="display: <?php echo $country_id == 100 ? 'table-row' : 'none' ; ?>">
           <td><span class="required">*</span> <?php echo $entry_city; ?></td>
           <td><input type="text" name="city" value="<?php echo $city; ?>" />
             <?php if ($error_city) { ?>
@@ -95,6 +96,17 @@
             <span class="error"><?php echo $error_zone; ?></span>
             <?php } ?></td>
         </tr>
+
+        <tr id="cb-account-address-city"
+            style="display: <?php echo $country_id == 100 ? 'table-row' : 'none' ; ?>">
+          <td><span class="required">*</span> <?php echo $entry_city_id; ?></td>
+          <td><select name="city_id">
+            </select>
+            <?php if ($error_city_id) { ?>
+            <span class="error"><?php echo $error_city_id; ?></span>
+            <?php } ?></td>
+        </tr>
+
         <tr>
           <td><?php echo $entry_default; ?></td>
           <td><?php if ($default) { ?>
@@ -120,9 +132,18 @@
   </form>
   <?php echo $content_bottom; ?></div>
 <script type="text/javascript"><!--
+var city_id = '<?php echo $city_id ?>';
 $('select[name=\'country_id\']').bind('change', function() {
+  var value = this.value;
+  if( value == 100 ){    
+    $('#input-account-city').hide();
+    $('#cb-account-address-city').show();
+  } else {
+    $('#input-account-city').show();
+    $('#cb-account-address-city').hide();
+  }
 	$.ajax({
-		url: 'index.php?route=account/address/country&country_id=' + this.value,
+		url: 'index.php?route=account/address/country&country_id=' + value,
 		dataType: 'json',
 		beforeSend: function() {
 			$('select[name=\'country_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
@@ -154,11 +175,84 @@ $('select[name=\'country_id\']').bind('change', function() {
 			}
 			
 			$('select[name=\'zone_id\']').html(html);
+      
+      if(value == 100) $('select[name=\'zone_id\']').trigger('change');
+
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
 		}
 	});
+});
+
+// JNE cb zone
+$('select[name=\'zone_id\']').bind('change', function() {
+  var country_id = $('select[name=\'country_id\']').val();
+  var textSelected = $(this).find('option:selected').text();
+  var zone_id = this.value ? textSelected : '<?php echo $zone_id; ?>';
+ 
+  console.log('zone_id',  zone_id);
+  console.log('city_id',  city_id);
+
+  // indonesia only (country id = 100)
+  if( !zone_id || !country_id || country_id != 100 ) return false;
+
+  $.ajax({
+    url: 'index.php?route=checkout/jne/tax&act=city&province=' + zone_id,
+    dataType: 'json',
+    beforeSend: function() {
+      $('select[name=\'zone_id\']').after('<span class="wait">&nbsp;<img src="catalog/view/theme/default/image/loading.gif" alt="" /></span>');
+    },
+    complete: function() {
+      $('.wait').remove();
+    },      
+    success: function(json) {
+      if (json['postcode_required'] == '1') {
+        $('#postcode-required').show();
+      } else {
+        $('#postcode-required').hide();
+      }
+      
+      var $cb = $('select[name=\'city_id\']');
+      $cb.html('<option value=""><?php echo $text_select; ?></option>');
+
+      $.each(json['data'], function(key, cat) {
+        // create group
+        var group = $('<optgroup>', {
+          label: key
+        });
+        // option combobox kota
+        $.each(cat, function(k, v) {
+          var option = $("<option/>", { value: k, text : v });
+
+          if( k == city_id ){
+            option.prop('selected', true);
+          }
+
+          option.appendTo(group);
+        });
+        // add to group
+        group.appendTo($cb);
+      });
+
+      $cb.trigger('change');
+
+    },
+    error: function(xhr, ajaxOptions, thrownError) {
+      alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+    }
+  });
+});
+
+// JNE combobox city
+$('select[name=\'city_id\']').change(function() {
+  var selected = $("option:selected", this);
+  var city = selected.parent()[0].label + ', ' + selected.text();
+  if( !selected.val() ){
+    $('input[name=\'city\']').val('');
+    return;
+  }
+  $('input[name=\'city\']').val(city);
 });
 
 $('select[name=\'country_id\']').trigger('change');

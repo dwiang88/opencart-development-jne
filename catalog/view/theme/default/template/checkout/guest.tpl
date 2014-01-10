@@ -59,8 +59,11 @@
   <input type="text" name="address_2" value="<?php echo $address_2; ?>" class="large-field" />
   <br />
   <br />
-  <span class="required">*</span> <?php echo $entry_city; ?><br />
-  <input type="text" name="city" value="<?php echo $city; ?>" class="large-field" />
+  <div id="input-payment-address-city" 
+       style="display:<?php echo ($country_id == 100) ? 'block' : 'none' ; ?>">
+    <span class="required">*</span> <?php echo $entry_city; ?><br />
+    <input type="text" name="city" value="<?php echo $city; ?>" class="large-field" />
+  </div>
   <br />
   <br />
   <span id="payment-postcode-required" class="required">*</span> <?php echo $entry_postcode; ?><br />
@@ -84,7 +87,7 @@
   <select name="zone_id" class="large-field" data-selected="guest-payment-<?php echo $zone_id ?>">
   </select>
   <!-- ================ JNE ================ -->
-  <div id="cb-payment-address-city"  data-selected="guest-payment-<?php echo $city_id ?>"
+  <div id="cb-payment-address-city" data-selected="guest-payment-<?php echo $city_id ?>"
        style="display:<?php echo ($country_id == 100) ? 'block' : 'none' ; ?>">
   <br />
   <br />
@@ -163,8 +166,10 @@ $('#payment-address select[name=\'country_id\']').bind('change', function() {
 	if ( value == '') return;
   else {
     if( value == 100 )
+      $('#input-payment-address-city').hide();
       $('#cb-payment-address-city').show();
     else
+      $('#input-payment-address-city').show();
       $('#cb-payment-address-city').hide();
   }
   

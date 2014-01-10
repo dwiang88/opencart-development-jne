@@ -20,6 +20,9 @@ $_['entry_postcode']    = 'Kode Pos:';
 $_['entry_city']        = 'Kota:';
 $_['entry_country']     = 'Negara:';
 $_['entry_zone']        = 'Propinsi:';
+
+$_['entry_city_id']     = 'Kota / Kabupaten:';
+
 $_['entry_default']     = 'Alamat Utama:';
 
 // Error
@@ -32,4 +35,5 @@ $_['error_postcode']    = 'Kode Pos harus terdiri dari 2 sampai 10 karakter!';
 $_['error_city']        = 'Kota harus terdiri dari 2 sampai 128 karakter!';
 $_['error_country']     = 'Silahkan pilih negara!';
 $_['error_zone']        = 'Silahkan pilih propinsi!';
+$_['error_city_id']     = 'Silahkan pilih kota / kabupaten!';
 ?>

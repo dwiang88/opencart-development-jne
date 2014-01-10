@@ -19,7 +19,8 @@
     <td><?php echo $entry_address_2; ?></td>
     <td><input type="text" name="address_2" value="<?php echo $address_2; ?>" class="large-field" /></td>
   </tr>
-  <tr>
+  <tr id="input-shipping-address-city"
+      style="display:<?php echo ($country_id == 100) ? 'table-row' : 'none' ; ?>">
     <td><span class="required">*</span> <?php echo $entry_city; ?></td>
     <td><input type="text" name="city" value="<?php echo $city; ?>" class="large-field" /></td>
   </tr>
@@ -66,8 +67,10 @@ $('#shipping-address select[name=\'country_id\']').bind('change', function() {
   if ( value == '') return;
   else {
     if( value == 100 )
+      $('#input-shipping-address-city').hide();
       $('#cb-shipping-address-city').show();
     else
+      $('#input-shipping-address-city').show();
       $('#cb-shipping-address-city').hide();
   }
 
